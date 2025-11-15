@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Sources/MediaBridge/Resources/media_bridge_logo@2x.png" width="200" alt="MediaBridge Logo">
+  <img src="Sources/MediaBridge/Resources/media_bridge_logo.png" width="200" alt="MediaBridge Logo">
 </div>
 
 # MediaBridge
