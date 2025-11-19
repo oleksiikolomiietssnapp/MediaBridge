@@ -11,8 +11,8 @@ final class MockAuthorizationManager: AuthorizationManagerProtocol {
 
     var isAuthorized: Bool
     var authError: MockAuthError?
-    func authorize() async throws -> Bool {
-        guard let authError else { return isAuthorized }
+    func authorize() async throws -> MPMediaLibraryAuthorizationStatus {
+        guard let authError else { return isAuthorized ? .authorized : .denied }
         throw authError
     }
 

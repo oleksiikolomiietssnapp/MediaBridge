@@ -4,8 +4,8 @@ protocol MusicLibraryProtocol {
     var auth: AuthorizationManagerProtocol { get }
     var cache: MusicCacheProtocol { get }
 
-    func checkIfAuthorized() async -> Bool
-    func requestAuthorization() async -> Bool
+    func checkIfAuthorized() async throws
+    func requestAuthorization() async throws
 }
 
 public final class MusicLibrary: MusicLibraryProtocol {
@@ -20,31 +20,25 @@ public final class MusicLibrary: MusicLibraryProtocol {
         self.cache = cache
     }
 
-    func checkIfAuthorized() async -> Bool {
+    func checkIfAuthorized() async throws {
         let status = auth.status()
 
         guard case .authorized = status else {
-            log.debug("Unauthorized with status: %@", args: status.description)
-            return await requestAuthorization()
+            log.debug("Unauthorized with status: %@. Requesting authorization...", args: status.description)
+            try await requestAuthorization()
+
+            return
         }
 
         log.info("Access to music library is authorized")
-        return true
     }
 
-    func requestAuthorization() async -> Bool {
-        do {
-            return try await auth.authorize()
-        } catch {
-            log.error(error)
-            return false
-        }
+    func requestAuthorization() async throws {
+        try await auth.authorize()
     }
 
-    public func fetchSongs() async -> [String] {
-        guard await checkIfAuthorized() else {
-            return []
-        }
+    public func fetchSongs() async throws -> [String] {
+        try await checkIfAuthorized()
         // look into cache
         // if empty fetch from media library and cache it
         return []

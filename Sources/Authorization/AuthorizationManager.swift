@@ -2,17 +2,19 @@ import Foundation
 import MediaPlayer
 
 public protocol AuthorizationManagerProtocol {
-    func authorize() async throws -> Bool
+    @discardableResult
+    func authorize() async throws -> MPMediaLibraryAuthorizationStatus
     func status() -> MPMediaLibraryAuthorizationStatus
 }
 
 public class AuthorizationManager: AuthorizationManagerProtocol {
     public init() {}
 
-    public func authorize() async throws -> Bool {
+    @discardableResult
+    public func authorize() async throws -> MPMediaLibraryAuthorizationStatus {
         guard status() != .authorized else {
             log.debug("Access to music library is already authorized")
-            return true
+            return .authorized
         }
 
         let status = await MPMediaLibrary.requestAuthorization()
@@ -22,7 +24,7 @@ public class AuthorizationManager: AuthorizationManagerProtocol {
         }
 
         log.debug("Access to music library is authorized")
-        return true
+        return .authorized
     }
 
     public func status() -> MPMediaLibraryAuthorizationStatus {
