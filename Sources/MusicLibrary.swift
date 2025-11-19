@@ -39,8 +39,9 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
     public func fetchSongs() async throws -> [String] {
         try await checkIfAuthorized()
+
         // look into cache
         // if empty fetch from media library and cache it
-        return []
+        return cache.songs
     }
 }

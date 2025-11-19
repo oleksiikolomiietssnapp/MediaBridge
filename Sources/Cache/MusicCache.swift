@@ -1,11 +1,15 @@
 import Foundation
 
 public protocol MusicCacheProtocol {
-
+    var songs: [String] { get set }
 }
 
 public class MusicCache: MusicCacheProtocol {
-    public init() { }
+    public var songs: [String]
+    public init() {
+        // extract songs from cace storage
+        songs = []
+    }
 }
 
 
