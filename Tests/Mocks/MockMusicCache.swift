@@ -1,10 +1,10 @@
+import MediaPlayer
+
 @testable import MediaBridge
 
 final class MockMusicCache: MusicCacheProtocol {
-    var songs: [String]
-
-    init(songs: [String] = []) {
-        self.songs = songs
+    func fetchSongs() async throws -> [MPMediaItem] {
+        []
     }
 }
 

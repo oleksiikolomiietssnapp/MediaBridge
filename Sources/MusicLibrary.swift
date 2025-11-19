@@ -1,8 +1,10 @@
 import Foundation
+import MediaPlayer
 
 protocol MusicLibraryProtocol {
     var auth: AuthorizationManagerProtocol { get }
     var cache: MusicCacheProtocol { get }
+    var service: any MusicLibraryServiceProtocol { get }
 
     func checkIfAuthorized() async throws
     func requestAuthorization() async throws
@@ -11,13 +13,16 @@ protocol MusicLibraryProtocol {
 public final class MusicLibrary: MusicLibraryProtocol {
     public let auth: AuthorizationManagerProtocol
     public let cache: MusicCacheProtocol
+    public let service: any MusicLibraryServiceProtocol
 
     public init(
         auth: AuthorizationManagerProtocol = AuthorizationManager(),
-        cache: MusicCacheProtocol = .empty()
+        cache: MusicCacheProtocol = .empty(),
+        service: any MusicLibraryServiceProtocol
     ) {
         self.auth = auth
         self.cache = cache
+        self.service = service
     }
 
     func checkIfAuthorized() async throws {
@@ -37,11 +42,12 @@ public final class MusicLibrary: MusicLibraryProtocol {
         try await auth.authorize()
     }
 
-    public func fetchSongs() async throws -> [String] {
+
+    public func fetchSongs() async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
 
-        // look into cache
-        // if empty fetch from media library and cache it
-        return cache.songs
+        // cache songs
+
+        return try await service.fetchSongs()
     }
 }

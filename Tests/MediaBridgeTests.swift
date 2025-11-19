@@ -10,19 +10,6 @@ class MediaBridgeTests {
         #expect(songs.isEmpty)
     }
 
-    @Test func testFetchSongs() async throws {
-        let song1 = "Boo"
-        let song2 = "Foo"
-        let cache = MockMusicCache(songs: [song1, song2])
-        let library = MusicLibrary(mockCache: cache)
-        let songs = try await library.fetchSongs()
-        #expect(songs.count == 2)
-        let first = try #require(songs.first)
-        #expect(first == song1)
-        let last = try #require(songs.last)
-        #expect(last == song2)
-    }
-
     // Failures
 
     @Test func testSongs_Unauthorized() async throws {
@@ -49,14 +36,23 @@ class MediaBridgeTests {
         let songs = try await library.fetchSongs()
         #expect(songs.isEmpty)
     }
+
+    @Test func testFetchSongs_FailingService() async throws {
+        let service = MockMusicLibraryService(fetchSongError: .mock)
+        let library = MusicLibrary(mockService: service)
+        await #expect(throws: MockMusicLibraryService.MockError.mock) {
+            let _ = try await library.fetchSongs()
+        }
+    }
 }
 
 private extension MusicLibrary {
     convenience init(
         mockAuth: AuthorizationManagerProtocol = .mock,
-        mockCache: MusicCacheProtocol = .mock
+        mockCache: MusicCacheProtocol = .mock,
+        mockService: any MusicLibraryServiceProtocol = .mock
     ) {
-        self.init(auth: mockAuth, cache: mockCache)
+        self.init(auth: mockAuth, cache: mockCache, service: mockService)
     }
 
     static var withMocks: MusicLibrary { MusicLibrary(mockAuth: .mock) }
