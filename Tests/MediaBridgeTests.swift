@@ -6,7 +6,7 @@ import MediaBridge
 class MediaBridgeTests {
     @Test func testLibraryInit() async throws {
         let library = MusicLibrary.withMocks
-        let songs = try await library.fetchSongs()
+        let songs = await library.fetchSongs()
         #expect(songs.isEmpty)
     }
 
@@ -16,7 +16,7 @@ class MediaBridgeTests {
         let library = MusicLibrary(
             mockAuth: .mock(isAuthorized: false)
         )
-        let songs = try await library.fetchSongs()
+        let songs = await library.fetchSongs()
         #expect(songs.isEmpty)
     }
 
@@ -24,7 +24,7 @@ class MediaBridgeTests {
         let library = MusicLibrary(
             mockAuth: .mock(isAuthorized: false, authError: .mockError, authStatus: .denied)
         )
-        let songs = try await library.fetchSongs()
+        let songs = await library.fetchSongs()
         #expect(songs.isEmpty)
     }
 
@@ -32,7 +32,7 @@ class MediaBridgeTests {
         let library = MusicLibrary(
             mockAuth: .mock(isAuthorized: false, authStatus: .denied)
         )
-        let songs = try await library.fetchSongs()
+        let songs = await library.fetchSongs()
         #expect(songs.isEmpty)
     }
 }

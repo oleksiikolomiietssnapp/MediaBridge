@@ -11,7 +11,7 @@ public class AuthorizationManager: AuthorizationManagerProtocol {
 
     public func authorize() async throws -> Bool {
         guard status() != .authorized else {
-            print("Authorized")
+            log.debug("Access to music library is already authorized")
             return true
         }
 
@@ -21,7 +21,7 @@ public class AuthorizationManager: AuthorizationManagerProtocol {
             throw AuthorizationManagerError.unauthorized(status.description)
         }
 
-        print("Authorized")
+        log.debug("Access to music library is authorized")
         return true
     }
 

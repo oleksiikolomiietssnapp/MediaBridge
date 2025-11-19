@@ -24,11 +24,11 @@ public final class MusicLibrary: MusicLibraryProtocol {
         let status = auth.status()
 
         guard case .authorized = status else {
-            print("Unauthorized with status: \(status.description)")
+            log.debug("Unauthorized with status: %@", args: status.description)
             return await requestAuthorization()
         }
 
-        print("Authorized")
+        log.info("Access to music library is authorized")
         return true
     }
 
@@ -36,12 +36,12 @@ public final class MusicLibrary: MusicLibraryProtocol {
         do {
             return try await auth.authorize()
         } catch {
-            print(error.localizedDescription)
+            log.error(error)
             return false
         }
     }
 
-    public func fetchSongs() async throws -> [String] {
+    public func fetchSongs() async -> [String] {
         guard await checkIfAuthorized() else {
             return []
         }
