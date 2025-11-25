@@ -18,5 +18,8 @@ struct ExampleApp: App {
 }
 
 extension EnvironmentValues {
-    @Entry var library: MusicLibrary = MusicLibrary()
+    @Entry var library: MusicLibrary = MusicLibrary(
+        auth: AuthorizationManager(),
+        cache: .empty()
+    )
 }

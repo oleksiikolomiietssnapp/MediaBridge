@@ -14,9 +14,11 @@ struct ContentView: View {
     @State var songs: [MPMediaItem] = []
     var body: some View {
         Text(songs.count, format: .number)
+            .font(.largeTitle)
             .task {
                 do {
                     let songs = try await library.fetchSongs()
+                    self.songs = songs
                     print("Fetched: ", songs.count, "songs.")
                 } catch {
                     print(error.localizedDescription)

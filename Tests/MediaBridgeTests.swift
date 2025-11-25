@@ -14,10 +14,11 @@ class MediaBridgeTests {
 
     @Test func testSongs_Unauthorized() async throws {
         let library = MusicLibrary(
-            mockAuth: .mock(isAuthorized: false)
+            mockAuth: .mock(isAuthorized: false, authError: .mockError, authStatus: .denied)
         )
-        let songs = try await library.fetchSongs()
-        #expect(songs.isEmpty)
+        await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
+            let _ = try await library.fetchSongs()
+        }
     }
 
     @Test func testSongs_AuthFail() async throws {
@@ -31,15 +32,17 @@ class MediaBridgeTests {
 
     @Test func testSongs_StatusDenied() async throws {
         let library = MusicLibrary(
-            mockAuth: .mock(isAuthorized: false, authStatus: .denied)
+            mockAuth: .mock(isAuthorized: false, authError: .mockError, authStatus: .denied)
         )
-        let songs = try await library.fetchSongs()
-        #expect(songs.isEmpty)
+        await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
+            let _ = try await library.fetchSongs()
+        }
     }
 
     @Test func testFetchSongs_FailingService() async throws {
         let service = MockMusicLibraryService(fetchSongError: .mock)
-        let library = MusicLibrary(mockService: service)
+        let cache = MusicCache(service: service)
+        let library = MusicLibrary(mockCache: cache)
         await #expect(throws: MockMusicLibraryService.MockError.mock) {
             let _ = try await library.fetchSongs()
         }
@@ -52,7 +55,7 @@ private extension MusicLibrary {
         mockCache: MusicCacheProtocol = .mock,
         mockService: any MusicLibraryServiceProtocol = .mock
     ) {
-        self.init(auth: mockAuth, cache: mockCache, service: mockService)
+        self.init(auth: mockAuth, cache: mockCache)
     }
 
     static var withMocks: MusicLibrary { MusicLibrary(mockAuth: .mock) }
