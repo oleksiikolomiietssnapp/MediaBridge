@@ -7,21 +7,21 @@ public protocol MusicLibraryProtocol {
 
 public final class MusicLibrary: MusicLibraryProtocol {
     private let auth: AuthorizationManagerProtocol
-    private let cache: MusicCacheProtocol
+    private let service: any MusicLibraryServiceProtocol
 
     public init(
         auth: AuthorizationManagerProtocol = AuthorizationManager(),
-        cache: MusicCacheProtocol = .empty()
+        service: any MusicLibraryServiceProtocol = MusicLibraryService()
     ) {
         self.auth = auth
-        self.cache = cache
+        self.service = service
     }
 
     func checkIfAuthorized() async throws {
         let status = auth.status()
 
         guard case .authorized = status else {
-            log.debug("Unauthorized with status: %@. Requesting authorization...", args: status.description)
+            log.debug("Unauthorized with status: \(status.description). Requesting authorization...")
             try await requestAuthorization()
 
             return
@@ -37,6 +37,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
     public func fetchSongs() async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
-        return try await cache.fetchSongs()
+        return try await service.fetchSongs()
     }
 }

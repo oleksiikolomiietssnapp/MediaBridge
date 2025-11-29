@@ -1,11 +1,11 @@
 import MediaPlayer
 
-public protocol MusicLibraryServiceProtocol {
+public protocol MusicLibraryServiceProtocol: Sendable {
     associatedtype E: Error
     func fetchSongs() async throws(E) -> [MPMediaItem]
 }
 
-public final class MusicLibraryService: MusicLibraryServiceProtocol {
+public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
     public enum MusicLibraryServiceError: Error, LocalizedError {
         case noSongsFound
         public var errorDescription: String? {

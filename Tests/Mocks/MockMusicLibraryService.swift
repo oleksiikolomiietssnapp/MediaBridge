@@ -10,9 +10,10 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         self.fetchSongError = fetchSongError
     }
 
+    @MainActor
     var fetchSongError: MockError?
     func fetchSongs() async throws(MockError) -> [MPMediaItem] {
-        guard let fetchSongError else {
+        guard let fetchSongError = await fetchSongError else {
             return []
         }
         throw fetchSongError

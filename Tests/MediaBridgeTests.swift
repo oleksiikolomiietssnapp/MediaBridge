@@ -41,8 +41,10 @@ class MediaBridgeTests {
 
     @Test func testFetchSongs_FailingService() async throws {
         let service = MockMusicLibraryService(fetchSongError: .mock)
-        let cache = MusicCache(service: service)
-        let library = MusicLibrary(mockCache: cache)
+        let library = MusicLibrary(
+            mockAuth: .mock(isAuthorized: true, authStatus: .denied),
+            mockService: service
+        )
         await #expect(throws: MockMusicLibraryService.MockError.mock) {
             let _ = try await library.fetchSongs()
         }
@@ -52,10 +54,9 @@ class MediaBridgeTests {
 private extension MusicLibrary {
     convenience init(
         mockAuth: AuthorizationManagerProtocol = .mock,
-        mockCache: MusicCacheProtocol = .mock,
         mockService: any MusicLibraryServiceProtocol = .mock
     ) {
-        self.init(auth: mockAuth, cache: mockCache)
+        self.init(auth: mockAuth, service: mockService)
     }
 
     static var withMocks: MusicLibrary { MusicLibrary(mockAuth: .mock) }
