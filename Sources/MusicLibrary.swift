@@ -3,6 +3,7 @@ import MediaPlayer
 
 public protocol MusicLibraryProtocol {
     func fetchSongs() async throws -> [MPMediaItem]
+    func fetchSong(using predicate: MediaItemPredicateInfo) async throws -> MPMediaItem
 }
 
 public final class MusicLibrary: MusicLibraryProtocol {
@@ -34,9 +35,15 @@ public final class MusicLibrary: MusicLibraryProtocol {
         try await auth.authorize()
     }
 
-
     public func fetchSongs() async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
         return try await service.fetchSongs()
+    }
+
+
+    public func fetchSong(using predicate: MediaItemPredicateInfo) async throws -> MPMediaItem {
+        try await checkIfAuthorized()
+
+        return try await service.song(using: predicate)
     }
 }

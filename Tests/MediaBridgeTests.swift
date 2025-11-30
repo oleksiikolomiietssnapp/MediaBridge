@@ -40,13 +40,23 @@ class MediaBridgeTests {
     }
 
     @Test func testFetchSongs_FailingService() async throws {
-        let service = MockMusicLibraryService(fetchSongError: .mock)
+        let service = MockMusicLibraryService(fetchSongsError: .noSongs)
         let library = MusicLibrary(
             mockAuth: .mock(isAuthorized: true, authStatus: .denied),
             mockService: service
         )
-        await #expect(throws: MockMusicLibraryService.MockError.mock) {
+        await #expect(throws: MockMusicLibraryService.MockError.noSongs) {
             let _ = try await library.fetchSongs()
+        }
+    }
+
+    @Test func testFetchSong_Failure() async throws {
+        let service = MockMusicLibraryService(fetchSongError: .noSong)
+        let library = MusicLibrary(mockService: service)
+
+
+        await #expect(throws: MockMusicLibraryService.MockError.noSong) {
+            let _ = try await library.fetchSong(using: .mock)
         }
     }
 }
@@ -60,4 +70,11 @@ private extension MusicLibrary {
     }
 
     static var withMocks: MusicLibrary { MusicLibrary(mockAuth: .mock) }
+}
+
+
+extension MediaItemPredicateInfo {
+    static var mock: Self {
+        MediaItemPredicateInfo.persistentID(21)
+    }
 }
