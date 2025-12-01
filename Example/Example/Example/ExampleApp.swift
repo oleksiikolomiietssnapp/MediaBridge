@@ -10,6 +10,7 @@ import SwiftUI
 
 @main
 struct ExampleApp: App {
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -19,7 +20,6 @@ struct ExampleApp: App {
 
 extension EnvironmentValues {
     @Entry var library: MusicLibrary = MusicLibrary(
-        auth: AuthorizationManager(),
-        cache: .empty()
+        auth: AuthorizationManager()
     )
 }
