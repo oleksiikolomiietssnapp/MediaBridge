@@ -4,6 +4,13 @@ import MediaPlayer
 public protocol MusicLibraryProtocol {
     func fetchSongs() async throws -> [MPMediaItem]
     func fetchSong(with predicate: MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws -> [MPMediaItem]
+
+    func fetchAll(_ type: MPMediaType) async throws -> [MPMediaItem]
+    func fetch(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaItem]
 }
 
 public final class MusicLibrary: MusicLibraryProtocol {
@@ -16,6 +23,31 @@ public final class MusicLibrary: MusicLibraryProtocol {
     ) {
         self.auth = auth
         self.service = service
+    }
+
+    public func fetchAll(_ type: MPMediaType) async throws -> [MPMediaItem] {
+        try await checkIfAuthorized()
+        return try await service.fetchAll(type)
+    }
+
+    public func fetchSongs() async throws -> [MPMediaItem] {
+        try await fetchAll(.music)
+    }
+
+    public func fetch(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaItem] {
+        try await checkIfAuthorized()
+        return try await service.fetch(type, with: predicate, comparisonType: comparisonType)
+    }
+
+    public func fetchSong(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo
+    ) async throws -> [MPMediaItem] {
+        return try await fetch(.music, with: predicate, comparisonType)
     }
 
     func checkIfAuthorized() async throws {
@@ -33,17 +65,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
         try await auth.authorize()
     }
 
-    public func fetchSongs() async throws -> [MPMediaItem] {
-        try await checkIfAuthorized()
-        return try await service.fetchAll(.music)
-    }
-
-
-    public func fetchSong(with predicate: MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison = .equalTo) async throws -> [MPMediaItem] {
-        try await checkIfAuthorized()
-
-        return try await service.fetch(.music, with: predicate, comparisonType: comparisonType)
-    }
 }
 
 extension MusicLibraryProtocol {
