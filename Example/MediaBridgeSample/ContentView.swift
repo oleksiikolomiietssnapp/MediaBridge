@@ -13,40 +13,58 @@ struct ContentView: View {
     @Environment(\.library) var library
     @State var songs: [MPMediaItem] = []
     @State var filteredSongs: [MPMediaItem] = []
+    @State var order: SortOrder = .forward
+    @State var isOrderEnabled: Bool = true
     var body: some View {
-        VStack {
-            if songs.count == 0 {
-                ProgressView().tint(Color.red)
-            } else {
-                Text(songs.count, format: .number)
-                    .font(.largeTitle)
-            }
-
-            if !filteredSongs.isEmpty {
-                List(filteredSongs, id: \.persistentID) { song in
-                    if let uiImage = song.artwork?.image(at: CGSize(width: 64, height: 64)) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .frame(width: 200, height: 200)
-                    } else {
-                        ProgressView().tint(Color.orange)
+        NavigationStack {
+            VStack {
+                if !filteredSongs.isEmpty {
+                    List(filteredSongs, id: \.persistentID) { song in
+                        HStack {
+                            if let uiImage = song.artwork?.image(at: CGSize(width: 24, height: 24)) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                            } else {
+                                ProgressView().tint(Color.orange)
+                            }
+                            Text(song.title ?? "Unknown")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(song.skipCount, format: .number)
+                        }
                     }
+                } else {
+                    ProgressView().tint(Color.green)
                 }
-            } else {
-                ProgressView().tint(Color.green)
+            }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        isOrderEnabled = false
+                        order.toggle()
+                        Task {
+                            filteredSongs = try await library.fetchSkippedSongs(order: order)
+                            isOrderEnabled = true
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down")
+                    }
+                    .disabled(!isOrderEnabled)
+                }
             }
         }
         .task {
             do {
-                let date = Date()
-                filteredSongs = try await library.fetchSong(with: .title("Time"), comparisonType: .contains)
-                let songs = try await library.fetchSongs()
-                self.songs = songs
-                print("Fetched songs in \(DateInterval(start: date, end: .now).duration)")
-                print("Fetched: ", songs.count, "songs.")
+                filteredSongs = try await library.fetchSkippedSongs(order: order)
             } catch {
                 print(error.localizedDescription)
             }
         }
+    }
+}
+
+extension SortOrder {
+    mutating func toggle() {
+        self = self == .forward ? .reverse : .forward
     }
 }
