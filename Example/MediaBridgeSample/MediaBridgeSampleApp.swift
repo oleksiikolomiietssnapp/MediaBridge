@@ -1,6 +1,6 @@
 //
-//  ExampleApp.swift
-//  Example
+//  MediaBridgeSampleApp.swift
+//  MediaBridgeSample
 //
 //  Created by Oleksii Kolomiiets on 11/16/25.
 //
@@ -9,7 +9,7 @@ import MediaBridge
 import SwiftUI
 
 @main
-struct ExampleApp: App {
+struct MediaBridgeSampleApp: App {
 
     var body: some Scene {
         WindowGroup {

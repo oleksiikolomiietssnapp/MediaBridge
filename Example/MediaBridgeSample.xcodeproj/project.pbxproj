@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		53CB27262EDD9F87008D2303 /* MediaBridge in Frameworks */ = {isa = PBXBuildFile; productRef = 53CB27252EDD9F87008D2303 /* MediaBridge */; };
 		53F9D6552ECA675E00D200DF /* MediaBridge in Frameworks */ = {isa = PBXBuildFile; productRef = 53F9D6542ECA675E00D200DF /* MediaBridge */; };
 /* End PBXBuildFile section */
 
@@ -15,9 +16,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		53F9D6192ECA155B00D200DF /* Example */ = {
+		53F9D6192ECA155B00D200DF /* MediaBridgeSample */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Example;
+			path = MediaBridgeSample;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53CB27262EDD9F87008D2303 /* MediaBridge in Frameworks */,
 				53F9D6552ECA675E00D200DF /* MediaBridge in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -37,7 +39,7 @@
 		53F9D60E2ECA155B00D200DF = {
 			isa = PBXGroup;
 			children = (
-				53F9D6192ECA155B00D200DF /* Example */,
+				53F9D6192ECA155B00D200DF /* MediaBridgeSample */,
 				53F9D6182ECA155B00D200DF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,11 +68,12 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				53F9D6192ECA155B00D200DF /* Example */,
+				53F9D6192ECA155B00D200DF /* MediaBridgeSample */,
 			);
 			name = Example;
 			packageProductDependencies = (
 				53F9D6542ECA675E00D200DF /* MediaBridge */,
+				53CB27252EDD9F87008D2303 /* MediaBridge */,
 			);
 			productName = Example;
 			productReference = 53F9D6172ECA155B00D200DF /* Example.app */;
@@ -91,7 +94,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 53F9D6122ECA155B00D200DF /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = 53F9D6122ECA155B00D200DF /* Build configuration list for PBXProject "MediaBridgeSample" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -101,7 +104,7 @@
 			mainGroup = 53F9D60E2ECA155B00D200DF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				53F9D6532ECA675E00D200DF /* XCLocalSwiftPackageReference "../../../MediaBridge" */,
+				53CB27242EDD9F87008D2303 /* XCLocalSwiftPackageReference "../../MediaBridge" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53F9D6182ECA155B00D200DF /* Products */;
@@ -257,12 +260,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44H75889S4;
+				DEVELOPMENT_TEAM = FAJ4V9RHA6;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MediaBridgeSample;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "You data is on your device";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -279,7 +283,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.snappmobile.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.oleksiikolomiiets.MediaBridgeSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -303,12 +307,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44H75889S4;
+				DEVELOPMENT_TEAM = FAJ4V9RHA6;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MediaBridgeSample;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "You data is on your device";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -325,7 +330,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.snappmobile.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.oleksiikolomiiets.MediaBridgeSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -345,7 +350,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		53F9D6122ECA155B00D200DF /* Build configuration list for PBXProject "Example" */ = {
+		53F9D6122ECA155B00D200DF /* Build configuration list for PBXProject "MediaBridgeSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				53F9D6362ECA155E00D200DF /* Debug */,
@@ -366,13 +371,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		53F9D6532ECA675E00D200DF /* XCLocalSwiftPackageReference "../../../MediaBridge" */ = {
+		53CB27242EDD9F87008D2303 /* XCLocalSwiftPackageReference "../../MediaBridge" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../MediaBridge;
+			relativePath = ../../MediaBridge;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		53CB27252EDD9F87008D2303 /* MediaBridge */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MediaBridge;
+		};
 		53F9D6542ECA675E00D200DF /* MediaBridge */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MediaBridge;

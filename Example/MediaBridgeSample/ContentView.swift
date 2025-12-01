@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Example
+//  MediaBridgeSample
 //
 //  Created by Oleksii Kolomiiets on 11/16/25.
 //
