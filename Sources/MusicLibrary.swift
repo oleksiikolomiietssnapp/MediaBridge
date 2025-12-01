@@ -5,11 +5,12 @@ public protocol MusicLibraryProtocol {
     func fetchSongs() async throws -> [MPMediaItem]
     func fetchSong(with predicate: MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws -> [MPMediaItem]
 
-    func fetchAll(_ type: MPMediaType) async throws -> [MPMediaItem]
+    func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws -> [MPMediaItem]
     func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
-        _ comparisonType: MPMediaPredicateComparison
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
 }
 
@@ -25,30 +26,35 @@ public final class MusicLibrary: MusicLibraryProtocol {
         self.service = service
     }
 
-    public func fetchAll(_ type: MPMediaType) async throws -> [MPMediaItem] {
+    public func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
-        return try await service.fetchAll(type)
+        return try await service.fetchAll(type, groupingType: groupingType)
     }
 
     public func fetchSongs() async throws -> [MPMediaItem] {
-        try await fetchAll(.music)
+        try await fetchAll(.music, groupingType: .title)
     }
 
     public func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
-        _ comparisonType: MPMediaPredicateComparison
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
-        return try await service.fetch(type, with: predicate, comparisonType: comparisonType)
+        return try await service.fetch(type, with: predicate, comparisonType: comparisonType, groupingType: groupingType)
     }
 
     public func fetchSong(
         with predicate: MediaItemPredicateInfo,
-        comparisonType: MPMediaPredicateComparison = .equalTo
+        comparisonType: MPMediaPredicateComparison = .equalTo,
     ) async throws -> [MPMediaItem] {
-        return try await fetch(.music, with: predicate, comparisonType)
+        return try await fetch(.music, with: predicate, comparisonType, groupingType: .title)
     }
+
+//    func fetchSkippedSongs() async throws -> [MPMediaItem] {
+//        return try await fetch(.music, groupingType: .skipCount)
+//    }
 
     func checkIfAuthorized() async throws {
         let status = auth.status()

@@ -16,25 +16,22 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         self.songs = songs
     }
 
-    @MainActor
-    var fetchSongsError: MockError?
-    func fetchAll(_ type: MPMediaType) async throws(MockError) -> [MPMediaItem] {
+    @MainActor var fetchSongsError: MockError?
+    func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws(MockError) -> [MPMediaItem] {
         guard let fetchSongsError = await fetchSongsError else {
             return []
         }
         throw fetchSongsError
     }
 
-    @MainActor
-    var songs: [MPMediaItem]
-    @MainActor
-    var fetchSongError: MockError?
-    @MainActor
-    var noSongError: MockError?
+    @MainActor var songs: [MPMediaItem]
+    @MainActor var fetchSongError: MockError?
+    @MainActor var noSongError: MockError?
     func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
-        comparisonType: MPMediaPredicateComparison
+        comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
     ) async throws(MockError) -> [MPMediaItem] {
         guard let fetchSongError = await fetchSongError else {
             return await songs

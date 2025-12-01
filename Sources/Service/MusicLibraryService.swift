@@ -2,11 +2,12 @@ import MediaPlayer
 
 public protocol MusicLibraryServiceProtocol: Sendable {
     associatedtype E: Error
-    func fetchAll(_ type: MPMediaType) async throws(E) -> [MPMediaItem]
+    func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws(E) -> [MPMediaItem]
     func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
-        comparisonType: MPMediaPredicateComparison
+        comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
     ) async throws(E) -> [MPMediaItem]
 }
 
@@ -18,7 +19,7 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
             switch self {
             case .noSongsFound:
                 "No songs found"
-            case .noSongFound(predicate: let predicate):
+            case .noSongFound(let predicate):
                 "There is no song for predicate: \(predicate.description)"
             }
         }
@@ -29,31 +30,37 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
     public func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
-        comparisonType: MPMediaPredicateComparison = .equalTo
+        comparisonType: MPMediaPredicateComparison = .equalTo,
+        groupingType: MPMediaGrouping = .title
     ) throws(MusicLibraryServiceError) -> [MPMediaItem] {
         let typePredicate = MediaItemPredicateInfo.mediaType(type)
         let typeFilter = typePredicate.predicate(using: comparisonType)
         let additionalFilter = predicate.predicate(using: comparisonType)
 
-        let query = MPMediaQuery(filterPredicates: [typeFilter, additionalFilter])
+        let query = prepareQuery(with: [typeFilter, additionalFilter], groupingType: groupingType)
 
         guard let songs = query.items else {
             throw .noSongFound(predicate)
         }
-
         return songs
     }
 
-    public func fetchAll(_ type: MPMediaType) async throws(MusicLibraryServiceError) -> [MPMediaItem] {
+    public func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws(MusicLibraryServiceError) -> [MPMediaItem] {
         let typePredicate = MediaItemPredicateInfo.mediaType(type)
         let typeFilter = typePredicate.predicate()
-        let query = MPMediaQuery(filterPredicates: [typeFilter])
 
-        if let songs = query.items {
-            return songs
-        } else {
+        let query = prepareQuery(with: [typeFilter], groupingType: groupingType)
+
+        guard let songs = query.items else {
             throw .noSongsFound
         }
+        return songs
+    }
+
+    private func prepareQuery(with predicates: Set<MPMediaPredicate>?, groupingType: MPMediaGrouping) -> MPMediaQuery {
+        let query = MPMediaQuery(filterPredicates: predicates)
+        query.groupingType = groupingType
+        return query
     }
 }
 
