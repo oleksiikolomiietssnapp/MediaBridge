@@ -3,7 +3,7 @@ import MediaPlayer
 
 public protocol MusicLibraryProtocol {
     func fetchSongs() async throws -> [MPMediaItem]
-    func fetchSong(using predicate: MediaItemPredicateInfo) async throws -> MPMediaItem
+    func fetchSong(with predicate: MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws -> [MPMediaItem]
 }
 
 public final class MusicLibrary: MusicLibraryProtocol {
@@ -27,8 +27,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
             return
         }
-
-        log.info("Access to music library is authorized")
     }
 
     func requestAuthorization() async throws {
@@ -37,13 +35,22 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
     public func fetchSongs() async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
-        return try await service.fetchSongs()
+        return try await service.fetchAll(.music)
     }
 
 
-    public func fetchSong(using predicate: MediaItemPredicateInfo) async throws -> MPMediaItem {
+    public func fetchSong(with predicate: MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison = .equalTo) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
 
-        return try await service.song(using: predicate)
+        return try await service.fetch(.music, with: predicate, comparisonType: comparisonType)
+    }
+}
+
+extension MusicLibraryProtocol {
+    public func fetchSong(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo
+    ) async throws -> [MPMediaItem] {
+        return try await fetchSong(with: predicate, comparisonType: comparisonType)
     }
 }

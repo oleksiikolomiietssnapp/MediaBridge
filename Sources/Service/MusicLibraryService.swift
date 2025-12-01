@@ -2,8 +2,12 @@ import MediaPlayer
 
 public protocol MusicLibraryServiceProtocol: Sendable {
     associatedtype E: Error
-    func fetchSongs() async throws(E) -> [MPMediaItem]
-    func song(using predicate: MediaItemPredicateInfo) async throws(E) -> MPMediaItem
+    func fetchAll(_ type: MPMediaType) async throws(E) -> [MPMediaItem]
+    func fetch(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws(E) -> [MPMediaItem]
 }
 
 public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
@@ -15,31 +19,37 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
             case .noSongsFound:
                 "No songs found"
             case .noSongFound(predicate: let predicate):
-                "There is no song for property(\(predicate.property)) with value `\(String(describing: predicate.value))`"
+                "There is no song for predicate: \(predicate.description)"
             }
         }
     }
 
     public init() {}
 
-    public func song(using predicate: MediaItemPredicateInfo) throws(MusicLibraryServiceError) -> MPMediaItem {
-        let songFilter = MPMediaPropertyPredicate(
-            value: predicate.value,
-            forProperty: predicate.property
-        )
+    public func fetch(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo
+    ) throws(MusicLibraryServiceError) -> [MPMediaItem] {
+        let typePredicate = MediaItemPredicateInfo.mediaType(type)
+        let typeFilter = typePredicate.predicate(using: comparisonType)
+        let additionalFilter = predicate.predicate(using: comparisonType)
 
-        let query = MPMediaQuery.songs()
-        query.addFilterPredicate(songFilter)
+        let query = MPMediaQuery(filterPredicates: [typeFilter, additionalFilter])
 
-        guard let song = query.items?.first else {
+        guard let songs = query.items else {
             throw .noSongFound(predicate)
         }
 
-        return song
+        return songs
     }
 
-    public func fetchSongs() async throws(MusicLibraryServiceError) -> [MPMediaItem] {
-        if let songs = MPMediaQuery.songs().items {
+    public func fetchAll(_ type: MPMediaType) async throws(MusicLibraryServiceError) -> [MPMediaItem] {
+        let typePredicate = MediaItemPredicateInfo.mediaType(type)
+        let typeFilter = typePredicate.predicate()
+        let query = MPMediaQuery(filterPredicates: [typeFilter])
+
+        if let songs = query.items {
             return songs
         } else {
             throw .noSongsFound
@@ -51,21 +61,4 @@ extension MusicLibraryServiceProtocol where Self == MusicLibraryService, E == Mu
     public static var live: MusicLibraryService {
         MusicLibraryService()
     }
-}
-
-public enum MediaItemPredicateInfo: Sendable {
-    case persistentID(UInt64)
-
-    public var property: String {
-        switch self {
-        case .persistentID: MPMediaItemPropertyPersistentID
-        }
-    }
-
-    public var value: Any? {
-        switch self {
-        case .persistentID(let uInt64): uInt64
-        }
-    }
-
 }
