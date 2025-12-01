@@ -4,9 +4,9 @@ import MediaBridge
 
 @Suite
 class MediaBridgeTests {
-    @Test func testLibraryInit() async throws {
+    @Test func testFetchSkipedSongs() async throws {
         let library = MusicLibrary.withMocks
-        let songs = try await library.fetchSongs()
+        let songs = try await library.fetchSkippedSongs()
         #expect(songs.isEmpty)
     }
 
@@ -53,7 +53,6 @@ class MediaBridgeTests {
     @Test func testFetchSong_Failure() async throws {
         let service = MockMusicLibraryService(fetchSongError: .noSong)
         let library = MusicLibrary(mockService: service)
-
 
         await #expect(throws: MockMusicLibraryService.MockError.noSong) {
             let _ = try await library.fetchSong(with: .mock)
