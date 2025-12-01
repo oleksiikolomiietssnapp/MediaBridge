@@ -23,7 +23,7 @@ public class AuthorizationManager: AuthorizationManagerProtocol {
             throw AuthorizationManagerError.unauthorized(status.description)
         }
 
-        log.debug("Access to music library is authorized")
+        log.info("Access to music library is authorized")
         return .authorized
     }
 
