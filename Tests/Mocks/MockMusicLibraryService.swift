@@ -9,16 +9,16 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
     init(
         fetchSongError: MockError? = nil,
         fetchSongsError: MockError? = nil,
-        song: MPMediaItem = .mock
+        songs: [MPMediaItem] = [.mock]
     ) {
         self.fetchSongError = fetchSongError
         self.fetchSongsError = fetchSongsError
-        self.song = song
+        self.songs = songs
     }
 
     @MainActor
     var fetchSongsError: MockError?
-    func fetchSongs() async throws(MockError) -> [MPMediaItem] {
+    func fetchAll(_ type: MPMediaType) async throws(MockError) -> [MPMediaItem] {
         guard let fetchSongsError = await fetchSongsError else {
             return []
         }
@@ -26,14 +26,18 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
     }
 
     @MainActor
-    var song: MPMediaItem
+    var songs: [MPMediaItem]
     @MainActor
     var fetchSongError: MockError?
     @MainActor
     var noSongError: MockError?
-    func song(using predicate: MediaBridge.MediaItemPredicateInfo) async throws(MockError) -> MPMediaItem {
+    func fetch(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws(MockError) -> [MPMediaItem] {
         guard let fetchSongError = await fetchSongError else {
-            return await song
+            return await songs
         }
         throw fetchSongError
     }
@@ -46,7 +50,7 @@ extension MusicLibraryServiceProtocol where Self == MockMusicLibraryService, E =
     }
 }
 
-extension MPMediaItem: @unchecked @retroactive Sendable { }
+extension MPMediaItem: @unchecked @retroactive Sendable {}
 extension MPMediaItem {
     static var mock: MPMediaItem {
         MPMediaItem()

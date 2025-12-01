@@ -56,7 +56,7 @@ class MediaBridgeTests {
 
 
         await #expect(throws: MockMusicLibraryService.MockError.noSong) {
-            let _ = try await library.fetchSong(using: .mock)
+            let _ = try await library.fetchSong(with: .mock)
         }
     }
 }
