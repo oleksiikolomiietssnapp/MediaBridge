@@ -43,7 +43,7 @@ struct ContentView: View {
                         isOrderEnabled = false
                         order.toggle()
                         Task {
-                            filteredSongs = try await library.fetchSkippedSongs(order: order)
+                            filteredSongs = try await fetchSkippedSongs(order: order)
                             isOrderEnabled = true
                         }
                     } label: {
@@ -55,11 +55,15 @@ struct ContentView: View {
         }
         .task {
             do {
-                filteredSongs = try await library.fetchSkippedSongs(order: order)
+                filteredSongs = try await fetchSkippedSongs(order: order)
             } catch {
                 print(error.localizedDescription)
             }
         }
+    }
+
+    func fetchSkippedSongs(order: SortOrder) async throws -> [MPMediaItem] {
+        try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: order)
     }
 }
 

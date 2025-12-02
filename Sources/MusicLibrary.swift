@@ -2,18 +2,6 @@ import Foundation
 import MediaPlayer
 
 public protocol MusicLibraryProtocol {
-    func fetchSkippedSongs(order: SortOrder) async throws -> [MPMediaItem]
-
-    func fetchSongs<T: Comparable>(
-        sortedBy key: (KeyPath<MPMediaItem, T> & Sendable)?,
-        order: SortOrder
-    ) async throws -> [MPMediaItem]
-
-    func fetchSong(
-        with predicate: MediaItemPredicateInfo,
-        comparisonType: MPMediaPredicateComparison
-    ) async throws -> [MPMediaItem]
-
     func fetchAll(
         _ type: MPMediaType,
         groupingType: MPMediaGrouping
@@ -24,6 +12,16 @@ public protocol MusicLibraryProtocol {
         with predicate: MediaItemPredicateInfo,
         _ comparisonType: MPMediaPredicateComparison,
         groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItem]
+
+    func fetchSongs<T: Comparable>(
+        sortedBy key: (KeyPath<MPMediaItem, T> & Sendable)?,
+        order: SortOrder
+    ) async throws -> [MPMediaItem]
+
+    func fetchSong(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
     ) async throws -> [MPMediaItem]
 }
 
@@ -96,10 +94,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await fetch(.music, with: predicate, comparisonType, groupingType: .title)
     }
 
-    public func fetchSkippedSongs(order: SortOrder) async throws -> [MPMediaItem] {
-        try await fetchSongs(sortedBy: \MPMediaItem.skipCount, order: order)
-    }
-
     // MARK: - Private methods
 
     private func checkIfAuthorized() async throws {
@@ -120,11 +114,8 @@ public final class MusicLibrary: MusicLibraryProtocol {
 }
 
 extension MusicLibraryProtocol where Self == MusicLibrary {
-    public func fetchSongs<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)? = \MPMediaItem.dateAdded,
-        order: SortOrder = .forward
-    ) async throws -> [MPMediaItem] {
-        return try await fetchSongs(sortedBy: sortingKey, order: order)
+    public func fetchSongs() async throws -> [MPMediaItem] {
+        return try await fetchSongs(sortedBy: (KeyPath<MPMediaItem, Never> & Sendable)?.none, order: .forward)
     }
 
     public func fetchSong(
@@ -132,11 +123,5 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
         comparisonType: MPMediaPredicateComparison = .equalTo
     ) async throws -> [MPMediaItem] {
         return try await fetchSong(with: predicate, comparisonType: comparisonType)
-    }
-
-    public func fetchSkippedSongs(
-        order: SortOrder = .forward
-    ) async throws -> [MPMediaItem] {
-        try await fetchSkippedSongs(order: order)
     }
 }

@@ -4,9 +4,15 @@ import MediaBridge
 
 @Suite
 class MediaBridgeTests {
-    @Test func testFetchSkipedSongs() async throws {
+    @Test func testFetchSongs() async throws {
         let library = MusicLibrary.withMocks
-        let songs = try await library.fetchSkippedSongs()
+        let songs = try await library.fetchSongs()
+        #expect(songs.isEmpty)
+    }
+
+    @Test func testFetchSortedSongs() async throws {
+        let library = MusicLibrary.withMocks
+        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: .forward)
         #expect(songs.isEmpty)
     }
 
