@@ -1,4 +1,5 @@
 import Foundation
+import MediaPlayer
 
 /// Errors that can occur during music library authorization.
 ///
@@ -18,15 +19,29 @@ public enum AuthorizationManagerError: Error, LocalizedError {
     ///     print("Authorization failed with status: \(status)")
     /// }
     /// ```
-    case unauthorized(String)
+    case unauthorized(MPMediaLibraryAuthorizationStatus)
 
     /// A human-readable description of the error suitable for displaying to users.
     ///
-    /// Returns a localized error message that can be shown in the UI.
+    /// Returns a localized error message that can be shown in the UI, explaining why access was denied.
     public var errorDescription: String? {
         switch self {
-        case .unauthorized(let message):
-            "Unauthorized with status: \(message)"
+        case .unauthorized(let status):
+            buildUserFriendlyMessage(for: status)
+        }
+    }
+
+    /// Builds a user-friendly message based on the authorization status.
+    private func buildUserFriendlyMessage(for status: MPMediaLibraryAuthorizationStatus) -> String {
+        switch status {
+        case .denied:
+            "You've denied access to your music library. Enable access in Settings to use this feature."
+        case .restricted:
+            "Access to your music library is restricted. This may be due to parental controls or device settings."
+        case .notDetermined:
+            "Unable to request music library access. Please try again."
+        default:
+            "Unable to access your music library (\(status)). Please check your device settings."
         }
     }
 }

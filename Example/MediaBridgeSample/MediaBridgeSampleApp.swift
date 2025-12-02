@@ -19,7 +19,5 @@ struct MediaBridgeSampleApp: App {
 }
 
 extension EnvironmentValues {
-    @Entry var library: MusicLibrary = MusicLibrary(
-        auth: AuthorizationManager()
-    )
+    @Entry var library: MusicLibraryProtocol = MusicLibrary()
 }

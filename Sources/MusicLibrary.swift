@@ -125,8 +125,8 @@ public final class MusicLibrary: MusicLibraryProtocol {
     private let service: any MusicLibraryServiceProtocol
 
     public init(
-        auth: any AuthorizationManagerProtocol = AuthorizationManager<MPMediaLibrary>(),
-        service: any MusicLibraryServiceProtocol = MusicLibraryService()
+        auth: any AuthorizationManagerProtocol = .live,
+        service: any MusicLibraryServiceProtocol = .live
     ) {
         self.auth = auth
         self.service = service

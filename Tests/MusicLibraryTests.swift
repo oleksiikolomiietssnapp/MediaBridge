@@ -1,6 +1,7 @@
 import Testing
 import MediaPlayer
-import MediaBridge
+
+@testable import MediaBridge
 
 @Suite("MusicLibrary")
 class MusicLibraryTests {

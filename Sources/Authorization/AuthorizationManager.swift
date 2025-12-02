@@ -62,16 +62,15 @@ public protocol AuthorizationManagerProtocol {
 /// ## Generic Parameter
 /// - `T`: The media library type conforming to `MediaLibraryProtocol` (e.g., `MPMediaLibrary`)
 ///
-/// ## Usage
+/// ## Instantiation
+/// Use the `.live` factory property to get the default implementation:
 /// ```swift
-/// let manager = AuthorizationManager<MPMediaLibrary>()
+/// let manager: any AuthorizationManagerProtocol = .live
 /// try await manager.authorize()  // Request authorization if needed
-/// let songs = try await library.fetchSongs()  // Now able to access music library
 /// ```
-public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {
-    /// Initializes a new authorization manager for the specified media library type.
-    public init() {}
-    
+///
+/// For custom implementations, conform to `AuthorizationManagerProtocol` and inject your implementation.
+public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {    
     /// Requests authorization to access the music library.
     ///
     /// Checks if authorization is already granted. If so, returns immediately.
@@ -89,7 +88,7 @@ public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManager
         let status = await T.requestAuthorization()
         
         guard status == .authorized else {
-            throw AuthorizationManagerError.unauthorized(status.description)
+            throw AuthorizationManagerError.unauthorized(status)
         }
         
         log.info("Access to music library is authorized")
@@ -107,4 +106,8 @@ public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManager
     }
 }
 
-
+extension AuthorizationManagerProtocol where T == MPMediaLibrary, Self == AuthorizationManager<T> {
+    public static var live: Self {
+        AuthorizationManager()
+    }
+}
