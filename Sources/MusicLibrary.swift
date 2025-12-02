@@ -120,10 +120,63 @@ public protocol MusicLibraryProtocol {
     ) async throws -> [MPMediaItem]
 }
 
+/// Primary interface for accessing the device's music library.
+///
+/// `MusicLibrary` provides a high-level API for fetching songs and media items from the user's
+/// music library. It coordinates authorization requests and service layer queries, handling
+/// permission checks automatically before returning results.
+///
+/// ## Architecture
+/// This class acts as a facade over two internal systems:
+/// - Authorization management via `AuthorizationManagerProtocol`
+/// - Media queries via `MusicLibraryServiceProtocol`
+///
+/// It ensures users have permission to access the music library before making queries.
+///
+/// ## Usage
+/// Create an instance and call methods to fetch media:
+/// ```swift
+/// let library = MusicLibrary()
+/// let songs = try await library.fetchSongs()
+/// let artist = try await library.fetch(.music, with: .artist("Taylor Swift"), .contains, groupingType: .album)
+/// ```
+///
+/// ## Dependency Injection
+/// For custom behavior, inject your implementations:
+/// ```swift
+/// let yourAuth = YourAuthorizationManager(isAuthorized: true)
+/// let yourService = YourMusicLibraryService()
+/// let library = MusicLibrary(auth: yourAuth, service: yourService)
+/// ```
 public final class MusicLibrary: MusicLibraryProtocol {
     private let auth: any AuthorizationManagerProtocol
     private let service: any MusicLibraryServiceProtocol
 
+    /// Creates a new music library instance.
+    ///
+    /// By default, this initializer uses the production implementations (`.live`) for both
+    /// authorization management and music library services. Customize via dependency injection
+    /// for testing or specialized behavior.
+    ///
+    /// - Parameters:
+    ///   - auth: The authorization manager to handle music library access permissions.
+    ///     Defaults to `.live` for production use. Pass a mock implementation for testing.
+    ///   - service: The service layer for querying media items.
+    ///     Defaults to `.live` for production use. Pass a mock implementation for testing.
+    ///
+    /// ## Examples
+    ///
+    /// Create a library for production use with default implementations:
+    /// ```swift
+    /// let library = MusicLibrary()
+    /// ```
+    ///
+    /// Create a library with only a custom authorization manager:
+    /// ```swift
+    /// let customAuth = MyCustomAuthorizationManager()
+    /// let customService = MyCustomMusicLibraryService()
+    /// let library = MusicLibrary(auth: customAuth, service: yourService)
+    /// ```
     public init(
         auth: any AuthorizationManagerProtocol = .live,
         service: any MusicLibraryServiceProtocol = .live
