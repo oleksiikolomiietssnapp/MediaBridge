@@ -16,10 +16,7 @@ let package = Package(
     targets: [
         .target(
             name: "MediaBridge",
-            path: "Sources",
-            resources: [
-                .process("Resources")
-            ]
+            path: "Sources"
         ),
         .testTarget(
             name: "MediaBridgeTests",
