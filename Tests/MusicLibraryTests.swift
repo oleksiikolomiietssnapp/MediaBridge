@@ -2,8 +2,8 @@ import Testing
 import MediaPlayer
 import MediaBridge
 
-@Suite
-class MediaBridgeTests {
+@Suite("MusicLibrary")
+class MusicLibraryTests {
     @Test func testFetchSongs() async throws {
         let library = MusicLibrary.withMocks
         let songs = try await library.fetchSongs()
@@ -68,7 +68,7 @@ class MediaBridgeTests {
 
 private extension MusicLibrary {
     convenience init(
-        mockAuth: AuthorizationManagerProtocol = .mock,
+        mockAuth: any AuthorizationManagerProtocol = .mock,
         mockService: any MusicLibraryServiceProtocol = .mock
     ) {
         self.init(auth: mockAuth, service: mockService)

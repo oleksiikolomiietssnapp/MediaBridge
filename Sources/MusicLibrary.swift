@@ -121,11 +121,11 @@ public protocol MusicLibraryProtocol {
 }
 
 public final class MusicLibrary: MusicLibraryProtocol {
-    private let auth: AuthorizationManagerProtocol
+    private let auth: any AuthorizationManagerProtocol
     private let service: any MusicLibraryServiceProtocol
 
     public init(
-        auth: AuthorizationManagerProtocol = AuthorizationManager(),
+        auth: any AuthorizationManagerProtocol = AuthorizationManager<MPMediaLibrary>(),
         service: any MusicLibraryServiceProtocol = MusicLibraryService()
     ) {
         self.auth = auth

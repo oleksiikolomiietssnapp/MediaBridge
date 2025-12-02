@@ -2,7 +2,7 @@ import Foundation
 import MediaPlayer
 
 extension MPMediaLibraryAuthorizationStatus {
-    var description: String {
+    public var description: String {
         switch self {
         case .notDetermined:
             "notDetermined"
