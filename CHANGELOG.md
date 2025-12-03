@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2025-12-03
+
 ### Added
-- PR template for standardized pull requests
-- Swift Package Index (.spi.yml) configuration
-- CONTRIBUTING.md guidelines for contributors
 - CHANGELOG.md file for version documentation
+- CHANGELOG maintenance guidelines in CONTRIBUTING.md
 
 ## [0.2.5] - 2025-12-03
 
