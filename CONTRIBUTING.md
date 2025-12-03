@@ -282,6 +282,31 @@ Before submitting a PR, ensure:
 - [ ] PR description includes `Closes #{issue-number}`
 - [ ] No new external dependencies added
 - [ ] Code is free of debug logging and temporary changes
+- [ ] CHANGELOG.md updated with your changes
+
+## Updating the CHANGELOG
+
+We maintain a [CHANGELOG.md](CHANGELOG.md) file following [Keep a Changelog](https://keepachangelog.com/) format.
+
+When submitting a PR with changes:
+
+1. Add an entry under the `[Unreleased]` section
+2. Use appropriate category: Added, Changed, Fixed, Removed
+3. Keep entries concise and user-focused
+
+Example:
+```markdown
+## [Unreleased]
+
+### Added
+- New feature description
+- Another improvement
+
+### Fixed
+- Bug fix description
+```
+
+The maintainers will move entries to a version number when a release is created.
 
 ## Questions?
 
