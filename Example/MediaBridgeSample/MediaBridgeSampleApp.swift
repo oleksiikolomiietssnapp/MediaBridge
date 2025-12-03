@@ -3,7 +3,6 @@ import SwiftUI
 
 @main
 struct MediaBridgeSampleApp: App {
-
     var body: some Scene {
         WindowGroup {
             ContentView()

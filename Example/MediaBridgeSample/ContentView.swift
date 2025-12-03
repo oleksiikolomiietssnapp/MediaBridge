@@ -4,59 +4,65 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.library) var library
-    @State var songs: [MPMediaItem] = []
-    @State var filteredSongs: [MPMediaItem] = []
-    @State var order: SortOrder = .forward
-    @State var isOrderEnabled: Bool = true
+    @State private var songs: [MPMediaItem] = []
+    @State private var order: SortOrder = .forward
+    @State private var isLoading = false
+    @State private var showError: Bool = false
+    @State private var errorMessage: Error?
+
     var body: some View {
         NavigationStack {
-            VStack {
-                if !filteredSongs.isEmpty {
-                    List(filteredSongs, id: \.persistentID) { song in
-                        HStack {
-                            if let uiImage = song.artwork?.image(at: CGSize(width: 24, height: 24)) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            } else {
-                                ProgressView().tint(Color.orange)
-                            }
-                            Text(song.title ?? "Unknown")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(song.skipCount, format: .number)
-                        }
-                    }
+            ZStack {
+                if songs.isEmpty && !isLoading {
+                    ContentUnavailableView("No Songs", systemImage: "music.note")
                 } else {
-                    ProgressView().tint(Color.green)
+                    List(songs, id: \.persistentID) { song in
+                        SongRow(song: song)
+                    }
+                }
+
+                if isLoading {
+                    ProgressView()
                 }
             }
+            .navigationTitle("Skipped Songs")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        isOrderEnabled = false
-                        order.toggle()
-                        Task {
-                            filteredSongs = try await fetchSkippedSongs(order: order)
-                            isOrderEnabled = true
-                        }
-                    } label: {
+                    Button(action: toggleSort) {
                         Image(systemName: "arrow.up.arrow.down")
                     }
-                    .disabled(!isOrderEnabled)
+                    .disabled(isLoading)
                 }
+            }
+            .alert("Error", isPresented: $showError) {
+                Button("OK") { showError = false }
+            } message: {
+                Text(errorMessage?.localizedDescription ?? "Unknown error")
             }
         }
         .task {
-            do {
-                filteredSongs = try await fetchSkippedSongs(order: order)
-            } catch {
-                print(error.localizedDescription)
-            }
+            await loadSongs()
         }
     }
 
-    func fetchSkippedSongs(order: SortOrder) async throws -> [MPMediaItem] {
-        try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: order)
+    private func toggleSort() {
+        order.toggle()
+        Task {
+            await loadSongs()
+        }
+    }
+
+    private func loadSongs() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: order)
+            errorMessage = nil
+        } catch {
+            errorMessage = error
+            showError = true
+        }
     }
 }
 
