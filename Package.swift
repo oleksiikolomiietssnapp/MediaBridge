@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "MediaBridge",
     platforms: [
-        .iOS(.v18)
+        .iOS(.v15)
     ],
     products: [
         .library(
