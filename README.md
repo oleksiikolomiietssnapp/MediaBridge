@@ -6,11 +6,11 @@
 
 A Swift bridge for MPMediaLibrary integration.
 
-[![visionOS 1.0+](https://img.shields.io/badge/visionOS-1.0+-7B68EE?logo=apple)](https://developer.apple.com/visionos/)
-[![iOS 15.0+](https://img.shields.io/badge/iOS-15.0+-007AFF?logo=apple&logoColor=white)](https://www.apple.com/ios/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/oleksiikolomiietssnapp/MediaBridge?color=8B5CF6&logo=github&logoColor=white)](https://github.com/oleksiikolomiietssnapp/MediaBridge/releases)
 [![Swift Package Index](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Foleksiikolomiietssnapp%2FMediaBridge%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/oleksiikolomiietssnapp/MediaBridge)
+[![iOS 15.0+](https://img.shields.io/badge/iOS-15.0+-007AFF?logo=apple&logoColor=white)](https://www.apple.com/ios/)
+[![visionOS 1.0+](https://img.shields.io/badge/🥽_visionOS-1.0+-7B68EE)](https://developer.apple.com/visionos/)
+[![Latest Release](https://img.shields.io/github/v/release/oleksiikolomiietssnapp/MediaBridge?color=8B5CF6&logo=github&logoColor=white)](https://github.com/oleksiikolomiietssnapp/MediaBridge/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
 
 ## Quick Start
 
