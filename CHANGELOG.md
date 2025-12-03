@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - GitHub Actions workflow for automated testing on iOS simulator
-- Code coverage enabled during test runs
 
 ## [0.2.7] - 2025-12-03
 
@@ -22,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - CHANGELOG.md file for version documentation
-- CHANGELOG maintenance guidelines in CONTRIBUTING.md
 
 ## [0.2.5] - 2025-12-03
 
