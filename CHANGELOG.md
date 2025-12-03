@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2025-12-03
+
+### Added
+- Vision OS platform information in documentation
+
+### Changed
+- Updated badge links in README
+
+### Fixed
+- Removed duplicate Swift version badge
+
+## [0.3.0] - 2025-12-03
+
+### Changed
+- Updated badges formatting in README for Swift and iOS versions
+
 ## [0.2.8] - 2025-12-03
 
 ### Added
