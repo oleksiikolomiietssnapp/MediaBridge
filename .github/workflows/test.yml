@@ -43,4 +43,20 @@ jobs:
           -scheme MediaBridge \
           -destination "id=${{ env.SIMULATOR_ID }}" \
           -derivedDataPath .build \
+          -enableCodeCoverage YES \
           -verbose
+
+    - name: Extract and report coverage
+      id: coverage
+      continue-on-error: true
+      run: |
+        # Find coverage data in test results
+        if [ -d ".build/Logs/Test" ]; then
+          # Try to extract from test logs
+          COVERAGE=$(grep -oE 'Code Coverage:[[:space:]]*[0-9]+\.?[0-9]*%' .build/Logs/Test/*.txt 2>/dev/null | grep -oE '[0-9]+\.?[0-9]*' | head -1)
+        fi
+
+        # Fallback to 0 if not found
+        COVERAGE=${COVERAGE:-0}
+        echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+        echo "Coverage percentage: $COVERAGE%"
