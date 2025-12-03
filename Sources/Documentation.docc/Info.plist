@@ -12,6 +12,12 @@
                     <key>version</key>
                     <string>15.0</string>
                 </dict>
+                <dict>
+                    <key>name</key>
+                    <string>visionOS</string>
+                    <key>version</key>
+                    <string>1.0</string>
+                </dict>
             </array>
         </dict>
     </dict>
