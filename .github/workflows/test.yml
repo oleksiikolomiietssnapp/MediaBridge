@@ -50,13 +50,19 @@ jobs:
       id: coverage
       continue-on-error: true
       run: |
-        # Find coverage data in test results
-        if [ -d ".build/Logs/Test" ]; then
-          # Try to extract from test logs
-          COVERAGE=$(grep -oE 'Code Coverage:[[:space:]]*[0-9]+\.?[0-9]*%' .build/Logs/Test/*.txt 2>/dev/null | grep -oE '[0-9]+\.?[0-9]*' | head -1)
+        # Find the xcresult bundle
+        XCRESULT=$(find .build/Logs/Test -name "*.xcresult" -type d | head -1)
+
+        if [ -n "$XCRESULT" ]; then
+          echo "Found xcresult: $XCRESULT"
+
+          # Extract coverage from xcresult
+          COVERAGE=$(xcrun xccov view "$XCRESULT" --json | python3 -c "import sys, json; data=json.load(sys.stdin); print(round(data.get('lineCoverage', 0) * 100, 2))" 2>/dev/null || echo "0")
+        else
+          COVERAGE="0"
         fi
 
-        # Fallback to 0 if not found
+        # Fallback to 0 if empty
         COVERAGE=${COVERAGE:-0}
         echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
         echo "Coverage percentage: $COVERAGE%"
