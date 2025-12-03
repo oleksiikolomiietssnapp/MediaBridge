@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2025-12-03
+
+### Added
+- GitHub Actions workflow for automated testing on iOS simulator
+- Code coverage enabled during test runs
+
+## [0.2.7] - 2025-12-03
+
+### Added
+- Badges to README (Swift version, iOS version, License, Latest Release, SPI badges)
+
 ## [0.2.6] - 2025-12-03
 
 ### Added
