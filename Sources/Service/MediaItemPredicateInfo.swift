@@ -129,15 +129,4 @@ public enum MediaItemPredicateInfo: Sendable {
         case .composerID(let composerId): composerId
         }
     }
-
-    private var predicateComparisonType: MPMediaPredicateComparison {
-        switch self {
-        case .persistentID, .title, .albumTitle, .albumArtist, .genre, .composer, .artist, .albumID, .artistID, .albumArtistID, .genreID,
-            .composerID:
-            .contains
-        case .mediaType:
-            .equalTo
-        }
-    }
-
 }
