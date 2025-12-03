@@ -6,7 +6,6 @@
 
 A Swift bridge for MPMediaLibrary integration.
 
-[![Swift 6.0+](https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![visionOS 1.0+](https://img.shields.io/badge/visionOS-1.0+-7B68EE?logo=apple)](https://developer.apple.com/visionos/)
 [![iOS 15.0+](https://img.shields.io/badge/iOS-15.0+-007AFF?logo=apple&logoColor=white)](https://www.apple.com/ios/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
