@@ -19,7 +19,7 @@ public protocol MusicLibraryProtocol {
     ///
     /// ## Example
     /// ```swift
-    /// let library = MusicLibrary()
+    /// @Environment(\.library) var library
     /// let allSongs = try await library.fetchAll(.music, groupingType: .title)
     /// ```
     func fetchAll(
@@ -42,7 +42,7 @@ public protocol MusicLibraryProtocol {
     ///
     /// ## Example
     /// ```swift
-    /// let library = MusicLibrary()
+    /// @Environment(\.library) var library
     /// let songs = try await library.fetch(
     ///     .music,
     ///     with: .artist("Taylor Swift"),
@@ -72,11 +72,13 @@ public protocol MusicLibraryProtocol {
     /// ## Examples
     /// Fetch unsorted songs:
     /// ```swift
+    /// @Environment(\.library) var library
     /// let songs = try await library.fetchSongs()
     /// ```
     ///
     /// Fetch songs sorted by title:
     /// ```swift
+    /// @Environment(\.library) var library
     /// let sorted = try await library.fetchSongs(
     ///     sortedBy: \MPMediaItem.title,
     ///     order: .forward
@@ -85,6 +87,7 @@ public protocol MusicLibraryProtocol {
     ///
     /// Fetch songs sorted by skip count:
     /// ```swift
+    /// @Environment(\.library) var library
     /// let frequent = try await library.fetchSongs(
     ///     sortedBy: \MPMediaItem.skipCount,
     ///     order: .reverse
@@ -108,7 +111,7 @@ public protocol MusicLibraryProtocol {
     ///
     /// ## Example
     /// ```swift
-    /// let library = MusicLibrary()
+    /// @Environment(\.library) var library
     /// let songs = try await library.fetchSong(
     ///     with: .persistentID(12345),
     ///     comparisonType: .equalTo
@@ -134,15 +137,39 @@ public protocol MusicLibraryProtocol {
 /// It ensures users have permission to access the music library before making queries.
 ///
 /// ## Usage
-/// Create an instance and call methods to fetch media:
+///
+/// Create an instance and use it directly:
 /// ```swift
 /// let library = MusicLibrary()
 /// let songs = try await library.fetchSongs()
 /// let artist = try await library.fetch(.music, with: .artist("Taylor Swift"), .contains, groupingType: .album)
 /// ```
 ///
+/// For SwiftUI apps, inject the library via environment values:
+/// ```swift
+/// extension EnvironmentValues {
+///     @Entry var library: MusicLibraryProtocol = MusicLibrary()
+/// }
+///
+/// struct ContentView: View {
+///     @Environment(\.library) var library
+///
+///     var body: some View {
+///         VStack {
+///             // Use library here
+///         }
+///         .task {
+///             let songs = try await library.fetchSongs(
+///                 sortedBy: \MPMediaItem.skipCount,
+///                 order: .reverse
+///             )
+///         }
+///     }
+/// }
+/// ```
+///
 /// ## Dependency Injection
-/// For custom behavior, inject your implementations:
+/// For testing or custom behavior, inject your implementations:
 /// ```swift
 /// let yourAuth = YourAuthorizationManager(isAuthorized: true)
 /// let yourService = YourMusicLibraryService()
@@ -272,7 +299,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     ///
     /// ## Example
     /// ```swift
-    /// let library = MusicLibrary()
+    /// @Environment(\.library) var library
     /// let allSongs = try await library.fetchSongs()
     /// ```
     public func fetchSongs() async throws -> [MPMediaItem] {
@@ -292,7 +319,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     ///
     /// ## Example
     /// ```swift
-    /// let library = MusicLibrary()
+    /// @Environment(\.library) var library
     /// // Using default .equalTo comparison
     /// let songs = try await library.fetchSong(with: .persistentID(12345))
     /// ```
