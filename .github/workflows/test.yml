@@ -46,6 +46,24 @@ jobs:
           -enableCodeCoverage YES \
           -verbose
 
+    - name: Print coverage summary
+      run: |
+        echo "=== Test Results ==="
+        XCRESULT=$(find .build/Logs/Test -name "*.xcresult" -type d | head -1)
+        echo "xcresult path: $XCRESULT"
+
+        echo ""
+        echo "=== Contents of xcresult ==="
+        find "$XCRESULT" -type f -name "*.json" | head -20
+
+        echo ""
+        echo "=== Looking for coverage files ==="
+        find "$XCRESULT" -type d -name "*coverage*" -o -type d -name "*report*" | head -20
+
+        echo ""
+        echo "=== All directories in xcresult ==="
+        find "$XCRESULT" -maxdepth 3 -type d | head -30
+
     - name: Extract and report coverage
       id: coverage
       continue-on-error: true
