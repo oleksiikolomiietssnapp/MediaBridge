@@ -11,9 +11,23 @@ import MediaPlayer
 /// - Pass mock implementations in tests
 /// - Implement your own conforming type for custom behavior
 ///
-/// ## Generic Error Type
-/// The associated type `E` allows concrete implementations to define their own error types,
-/// enabling type-safe error handling.
+/// ## Generic Types
+///
+/// The protocol defines two associated types for flexibility:
+///
+/// **Error Type (`E`):** Allows concrete implementations to define their own error types,
+/// enabling type-safe error handling specific to each implementation.
+///
+/// **Query Type (`Q`):** Allows implementations to use different query types conforming to
+/// `MediaQueryProtocol`. This enables using `MPMediaQuery` in production and mock queries in tests.
+///
+/// ## Example
+///
+/// Using with a mock query for testing:
+/// ```swift
+/// let service: any MusicLibraryServiceProtocol = MusicLibraryService<MockMediaQueryWithTwoItems>()
+/// let songs = try await service.fetchAll(.music, groupingType: .album)
+/// ```
 public protocol MusicLibraryServiceProtocol: Sendable {
     associatedtype E: Error
     associatedtype Q: MediaQueryProtocol
