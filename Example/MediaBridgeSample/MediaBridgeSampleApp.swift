@@ -1,10 +1,3 @@
-//
-//  MediaBridgeSampleApp.swift
-//  MediaBridgeSample
-//
-//  Created by Oleksii Kolomiiets on 11/16/25.
-//
-
 import MediaBridge
 import SwiftUI
 

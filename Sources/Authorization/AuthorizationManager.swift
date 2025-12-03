@@ -53,6 +53,14 @@ public protocol AuthorizationManagerProtocol {
     func status() -> MPMediaLibraryAuthorizationStatus
 }
 
+extension AuthorizationManagerProtocol {
+    public typealias T = MPMediaLibrary
+}
+
+extension AuthorizationManagerProtocol where Self == AuthorizationManager<T> {
+    public static var live: Self { AuthorizationManager() }
+}
+
 /// Default implementation of `AuthorizationManagerProtocol`.
 ///
 /// This generic class manages the app's authorization status for accessing the device's music library.
@@ -103,11 +111,5 @@ public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManager
     /// - Returns: The current `MPMediaLibraryAuthorizationStatus`
     public func status() -> MPMediaLibraryAuthorizationStatus {
         T.authorizationStatus()
-    }
-}
-
-extension AuthorizationManagerProtocol where T == MPMediaLibrary, Self == AuthorizationManager<T> {
-    public static var live: Self {
-        AuthorizationManager()
     }
 }
