@@ -17,6 +17,18 @@ class MusicLibraryTests {
         #expect(songs.isEmpty)
     }
 
+    @Test func testFetchByExplicitSongs() async throws {
+        let library = MusicLibrary.withMocks
+        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.isExplicitItem, order: .forward)
+        #expect(songs.isEmpty)
+    }
+
+    @Test func testFetchByDateAddedSongs() async throws {
+        let library = MusicLibrary.withMocks
+        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.releaseDate, order: .forward)
+        #expect(songs.isEmpty)
+    }
+
     // Failures
 
     @Test func testSongs_Unauthorized() async throws {

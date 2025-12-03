@@ -2,6 +2,9 @@ import MediaBridge
 import MediaPlayer
 
 final class MockMusicLibraryService: MusicLibraryServiceProtocol {
+    typealias E = MockError
+    typealias Q = MPMediaQuery
+
     enum MockError: Error {
         case noSong, noSongs
     }
@@ -41,7 +44,7 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
 
 }
 
-extension MusicLibraryServiceProtocol where Self == MockMusicLibraryService, E == MockMusicLibraryService.MockError {
+extension MusicLibraryServiceProtocol where Self == MockMusicLibraryService {
     static var mock: MockMusicLibraryService {
         MockMusicLibraryService()
     }

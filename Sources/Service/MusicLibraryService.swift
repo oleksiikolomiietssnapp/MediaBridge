@@ -16,6 +16,7 @@ import MediaPlayer
 /// enabling type-safe error handling.
 public protocol MusicLibraryServiceProtocol: Sendable {
     associatedtype E: Error
+    associatedtype Q: MediaQueryProtocol
 
     /// Fetches all media items of a specific type with optional grouping.
     ///
@@ -35,7 +36,7 @@ public protocol MusicLibraryServiceProtocol: Sendable {
     func fetchAll(
         _ type: MPMediaType,
         groupingType: MPMediaGrouping
-    ) async throws(E) -> [MPMediaItem]
+    ) async throws -> [MPMediaItem]
 
     /// Fetches media items matching a predicate with optional filtering.
     ///
@@ -64,7 +65,20 @@ public protocol MusicLibraryServiceProtocol: Sendable {
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison,
         groupingType: MPMediaGrouping
-    ) async throws(E) -> [MPMediaItem]
+    ) async throws -> [MPMediaItem]
+}
+
+/// Factory extension for creating a live instance of `MusicLibraryService`.
+extension MusicLibraryServiceProtocol where Self == MusicLibraryService<MPMediaQuery>, E == Self.MusicLibraryServiceError {
+    /// Returns a live instance of the default `MusicLibraryService` implementation.
+    ///
+    /// Use this property in production code to get the standard service implementation:
+    /// ```swift
+    /// let library = MusicLibrary(service: .live)
+    /// ```
+    ///
+    /// For testing, pass mock implementations conforming to `MusicLibraryServiceProtocol` instead.
+    public static var live: Self { MusicLibraryService() }
 }
 
 /// The production implementation of `MusicLibraryServiceProtocol`.
@@ -79,9 +93,12 @@ public protocol MusicLibraryServiceProtocol: Sendable {
 /// ```
 ///
 /// For testing or custom implementations, conform to `MusicLibraryServiceProtocol` and inject your implementation.
-public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
+public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServiceProtocol, Sendable {
+    public typealias E = MusicLibraryServiceError
+    public typealias Q = T
+
     /// Errors that can occur during music library service operations.
-    public enum MusicLibraryServiceError: Error, LocalizedError {
+    public enum MusicLibraryServiceError: Error, LocalizedError, Equatable {
         /// No songs were found matching the query.
         case noSongsFound
 
@@ -97,6 +114,10 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
                 "Couldn't find a song matching \(predicate.description). Check your filters and try again."
             }
         }
+
+        public static func == (lhs: MusicLibraryService<T>.MusicLibraryServiceError, rhs: MusicLibraryService<T>.MusicLibraryServiceError) -> Bool {
+            lhs.errorDescription == rhs.errorDescription
+        }
     }
 
     // MARK: - MusicLibraryServiceProtocol Implementation
@@ -110,7 +131,7 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison = .equalTo,
         groupingType: MPMediaGrouping = .title
-    ) async throws(MusicLibraryServiceError) -> [MPMediaItem] {
+    ) async throws -> [MPMediaItem] {
         let typePredicate = MediaItemPredicateInfo.mediaType(type)
         let typeFilter = typePredicate.predicate(using: comparisonType)
         let additionalFilter = predicate.predicate(using: comparisonType)
@@ -118,7 +139,7 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
         let query = prepareQuery(with: [typeFilter, additionalFilter], groupingType: groupingType)
 
         guard let songs = query.items else {
-            throw .noSongFound(predicate)
+            throw E.noSongFound(predicate)
         }
         return songs
     }
@@ -130,39 +151,24 @@ public final class MusicLibraryService: MusicLibraryServiceProtocol, Sendable {
     public func fetchAll(
         _ type: MPMediaType,
         groupingType: MPMediaGrouping
-    ) async throws(MusicLibraryServiceError) -> [MPMediaItem] {
+    ) async throws -> [MPMediaItem] {
         let typePredicate = MediaItemPredicateInfo.mediaType(type)
         let typeFilter = typePredicate.predicate()
 
         let query = prepareQuery(with: [typeFilter], groupingType: groupingType)
 
         guard let songs = query.items else {
-            throw .noSongsFound
+            throw E.noSongsFound
         }
         return songs
     }
 
     // MARK: - Private Helpers
 
-    /// Prepares an MPMediaQuery with the given predicates and grouping.
-    private func prepareQuery(with predicates: Set<MPMediaPredicate>?, groupingType: MPMediaGrouping) -> MPMediaQuery {
-        let query = MPMediaQuery(filterPredicates: predicates)
+    private func prepareQuery(with predicates: Set<MPMediaPredicate>?, groupingType: MPMediaGrouping) -> Q {
+        var query = Q(filterPredicates: predicates)
         query.groupingType = groupingType
         return query
     }
 }
 
-/// Factory extension for creating a live instance of `MusicLibraryService`.
-extension MusicLibraryServiceProtocol where Self == MusicLibraryService, E == MusicLibraryService.MusicLibraryServiceError {
-    /// Returns a live instance of the default `MusicLibraryService` implementation.
-    ///
-    /// Use this property in production code to get the standard service implementation:
-    /// ```swift
-    /// let library = MusicLibrary(service: .live)
-    /// ```
-    ///
-    /// For testing, pass mock implementations conforming to `MusicLibraryServiceProtocol` instead.
-    public static var live: MusicLibraryService {
-        MusicLibraryService()
-    }
-}

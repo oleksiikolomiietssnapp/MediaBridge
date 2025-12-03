@@ -1,0 +1,33 @@
+{
+  "configurations" : [
+    {
+      "id" : "6A7DCD9B-4AEF-4866-8337-32B40F234AF3",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "MediaBridge",
+          "name" : "MediaBridge"
+        }
+      ]
+    },
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MediaBridgeTests",
+        "name" : "MediaBridgeTests"
+      }
+    }
+  ],
+  "version" : 1
+}

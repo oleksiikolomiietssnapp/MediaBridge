@@ -3,8 +3,6 @@ import MediaPlayer
 @testable import MediaBridge
 
 final class MockAuthorizationManager: AuthorizationManagerProtocol {
-    typealias T = MPMediaLibrary
-
     init(isAuthorized: Bool, authStatus: MPMediaLibraryAuthorizationStatus, authError: MockAuthError?) {
         self.isAuthorized = isAuthorized
         self.authStatus = authStatus
