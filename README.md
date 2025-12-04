@@ -33,6 +33,10 @@ let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order
 
 Both the service layer and authorization manager use production implementations by default (`.live`), but you can provide custom implementations for testing or specialized behavior.
 
+## Documentation
+
+For more information visit [Documentation](https://swiftpackageindex.com/oleksiikolomiietssnapp/MediaBridge/main/documentation/mediabridge).
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to MediaBridge.
