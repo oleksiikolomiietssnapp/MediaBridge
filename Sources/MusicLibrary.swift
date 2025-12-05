@@ -34,6 +34,10 @@ public protocol MusicLibraryProtocol {
     /// }
     /// ```
     var authorizationStatus: MPMediaLibraryAuthorizationStatus { get }
+
+    @discardableResult
+    func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus
+
     /// Fetches all media items of a specific type.
     ///
     /// Retrieves all media items matching the specified type from the device's music library.
@@ -252,6 +256,11 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
     // MARK: - General calls
 
+    @discardableResult
+    public func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus {
+        try await auth.authorize()
+    }
+
     public func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
         return try await service.fetchAll(type, groupingType: groupingType)
@@ -310,7 +319,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
     // MARK: - Private methods
 
     private func checkIfAuthorized() async throws {
-        let status = auth.status()
+        let status = authorizationStatus
 
         guard case .authorized = status else {
             log.debug("Unauthorized with status: \(status.description). Requesting authorization...")
@@ -319,11 +328,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
             return
         }
     }
-
-    private func requestAuthorization() async throws {
-        try await auth.authorize()
-    }
-
 }
 
 extension MusicLibraryProtocol where Self == MusicLibrary {
