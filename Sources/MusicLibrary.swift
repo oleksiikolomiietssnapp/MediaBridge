@@ -17,7 +17,7 @@ public protocol MusicLibraryProtocol {
     /// - `.notDetermined`: The user has not yet responded to the authorization prompt
     /// - `.restricted`: The app is restricted from accessing the music library (e.g., parental controls)
     ///
-    /// - Returns: The current `MPMediaLibraryAuthorizationStatus`
+    /// - Returns: The current ``MediaPlayer/MPMediaLibraryAuthorizationStatus``
     ///
     /// ## Example
     /// ```swift
@@ -347,7 +347,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// Equivalent to calling `fetchSongs(sortedBy: nil, order: .forward)`.
     ///
     /// - Returns: Array of all songs in the library, unsorted
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
@@ -367,7 +367,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     ///   - predicate: The predicate to identify the song (e.g., `.persistentID(12345)`, `.artist("Beatles")`)
     ///   - comparisonType: How to compare the predicate value (defaults to `.equalTo`)
     /// - Returns: Array of matching songs (typically contains 0 or 1 item)
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
