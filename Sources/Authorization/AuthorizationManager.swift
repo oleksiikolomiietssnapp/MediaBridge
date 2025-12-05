@@ -77,15 +77,15 @@ extension AuthorizationManagerProtocol where Self == AuthorizationManager<T> {
 /// try await manager.authorize()  // Request authorization if needed
 /// ```
 ///
-/// For custom implementations, conform to `AuthorizationManagerProtocol` and inject your implementation.
-public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {    
+/// For custom implementations, conform to ``AuthorizationManagerProtocol`` and inject your implementation.
+public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {
     /// Requests authorization to access the music library.
     ///
     /// Checks if authorization is already granted. If so, returns immediately.
     /// Otherwise, presents the system authorization dialog to the user.
     ///
     /// - Returns: `.authorized` if permission is granted
-    /// - Throws: `AuthorizationManagerError.unauthorized(status)` if access is denied
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if access is denied
     @discardableResult
     public func authorize() async throws -> MPMediaLibraryAuthorizationStatus {
         guard status() != .authorized else {
@@ -108,7 +108,7 @@ public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManager
     /// Queries the system for the current authorization status.
     /// Does not trigger any user prompts or permission dialogs.
     ///
-    /// - Returns: The current `MPMediaLibraryAuthorizationStatus`
+    /// - Returns: The current ``MediaPlayer/MPMediaLibraryAuthorizationStatus``
     public func status() -> MPMediaLibraryAuthorizationStatus {
         T.authorizationStatus()
     }

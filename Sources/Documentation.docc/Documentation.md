@@ -32,7 +32,15 @@ struct ContentView: View {
     @Environment(\.library) var library
 
     var body: some View {
-        // Use library to fetch songs
+        VStack {
+            // Use library to fetch songs
+        }
+        .task {
+            // Optional: Request authorization if not yet determined
+            if library.authorizationStatus == .notDetermined {
+                try await library.requestAuthorization()
+            }
+        }
     }
 }
 ```

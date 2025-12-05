@@ -6,6 +6,54 @@ import MediaPlayer
 /// This protocol provides methods to query and retrieve music library items with flexible filtering and sorting options.
 /// All methods require music library access authorization before use.
 public protocol MusicLibraryProtocol {
+    /// Returns the current authorization status for music library access.
+    ///
+    /// Queries the system for the current authorization status without triggering any user prompts or permission dialogs.
+    /// Use this property to check if the app has permission to access the user's music library.
+    ///
+    /// The authorization status can be one of the following:
+    /// - `.authorized`: The app has permission to access the music library
+    /// - `.denied`: The user has denied permission for music library access
+    /// - `.notDetermined`: The user has not yet responded to the authorization prompt
+    /// - `.restricted`: The app is restricted from accessing the music library (e.g., parental controls)
+    ///
+    /// - Returns: The current ``MediaPlayer/MPMediaLibraryAuthorizationStatus``
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// switch library.authorizationStatus {
+    /// case .authorized:
+    ///     // Safe to fetch music library items
+    /// case .denied, .restricted:
+    ///     // Show error message to user
+    /// case .notDetermined:
+    ///     // Prompt user for authorization
+    /// @unknown default:
+    ///     // Handle future status values
+    /// }
+    /// ```
+    var authorizationStatus: MPMediaLibraryAuthorizationStatus { get }
+
+    /// Requests music library access authorization from the user.
+    ///
+    /// Presents the system authorization prompt if the user hasn't yet decided.
+    /// If authorization is already determined, returns the current status without prompting.
+    ///
+    /// - Returns: The authorization status after the request
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if the request fails
+    ///
+    /// ## Example
+    /// ```swift
+    /// let library = MusicLibrary()
+    /// let status = try await library.requestAuthorization()
+    /// if case .authorized = status {
+    ///     let songs = try await library.fetchSongs()
+    /// }
+    /// ```
+    @discardableResult
+    func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus
+
     /// Fetches all media items of a specific type.
     ///
     /// Retrieves all media items matching the specified type from the device's music library.
@@ -15,7 +63,7 @@ public protocol MusicLibraryProtocol {
     ///   - type: The type of media to fetch (typically `.music`)
     ///   - groupingType: How to group the returned items
     /// - Returns: Array of all media items matching the specified type
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
@@ -38,7 +86,7 @@ public protocol MusicLibraryProtocol {
     ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
     ///   - groupingType: How to group the returned items
     /// - Returns: Array of media items matching the predicate
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
@@ -67,7 +115,7 @@ public protocol MusicLibraryProtocol {
     ///     If `nil`, results are not sorted.
     ///   - order: The sort order (`.forward` for ascending, `.reverse` for descending)
     /// - Returns: Array of songs, sorted if a key is provided
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Examples
     /// Fetch unsorted songs:
@@ -76,11 +124,11 @@ public protocol MusicLibraryProtocol {
     /// let songs = try await library.fetchSongs()
     /// ```
     ///
-    /// Fetch songs sorted by title:
+    /// Fetch songs sorted by play count:
     /// ```swift
     /// @Environment(\.library) var library
     /// let sorted = try await library.fetchSongs(
-    ///     sortedBy: \MPMediaItem.title,
+    ///     sortedBy: \MPMediaItem.playCount,
     ///     order: .forward
     /// )
     /// ```
@@ -107,7 +155,7 @@ public protocol MusicLibraryProtocol {
     ///   - predicate: The predicate to identify the song (e.g., `.persistentID(12345)`)
     ///   - comparisonType: How to compare the predicate value (defaults to `.equalTo`)
     /// - Returns: Array of matching songs (typically contains 0 or 1 item)
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
@@ -156,6 +204,14 @@ public protocol MusicLibraryProtocol {
 ///
 ///     var body: some View {
 ///         VStack {
+///             // Optional: Request authorization if not yet determined
+///             if library.authorizationStatus == .notDetermined {
+///                 Button("Request Music Library Access") {
+///                     Task {
+///                         try await library.requestAuthorization()
+///                     }
+///                 }
+///             }
 ///             // Use library here
 ///         }
 ///         .task {
@@ -178,6 +234,10 @@ public protocol MusicLibraryProtocol {
 public final class MusicLibrary: MusicLibraryProtocol {
     private let auth: any AuthorizationManagerProtocol
     private let service: any MusicLibraryServiceProtocol
+
+    public var authorizationStatus: MPMediaLibraryAuthorizationStatus {
+        auth.status()
+    }
 
     /// Creates a new music library instance.
     ///
@@ -213,6 +273,11 @@ public final class MusicLibrary: MusicLibraryProtocol {
     }
 
     // MARK: - General calls
+
+    @discardableResult
+    public func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus {
+        try await auth.authorize()
+    }
 
     public func fetchAll(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
@@ -272,7 +337,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
     // MARK: - Private methods
 
     private func checkIfAuthorized() async throws {
-        let status = auth.status()
+        let status = authorizationStatus
 
         guard case .authorized = status else {
             log.debug("Unauthorized with status: \(status.description). Requesting authorization...")
@@ -281,11 +346,6 @@ public final class MusicLibrary: MusicLibraryProtocol {
             return
         }
     }
-
-    private func requestAuthorization() async throws {
-        try await auth.authorize()
-    }
-
 }
 
 extension MusicLibraryProtocol where Self == MusicLibrary {
@@ -295,7 +355,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// Equivalent to calling `fetchSongs(sortedBy: nil, order: .forward)`.
     ///
     /// - Returns: Array of all songs in the library, unsorted
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
@@ -315,7 +375,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     ///   - predicate: The predicate to identify the song (e.g., `.persistentID(12345)`, `.artist("Beatles")`)
     ///   - comparisonType: How to compare the predicate value (defaults to `.equalTo`)
     /// - Returns: Array of matching songs (typically contains 0 or 1 item)
-    /// - Throws: `AuthorizationError` if music library access is not authorized
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift

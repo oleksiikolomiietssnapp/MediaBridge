@@ -7,7 +7,7 @@ import MediaPlayer
 ///
 /// ## Usage
 /// The protocol is designed for dependency injection:
-/// - Use `MusicLibraryServiceProtocol.live` in production
+/// - Use ``MusicLibraryServiceProtocol/live`` in production
 /// - Pass mock implementations in tests
 /// - Implement your own conforming type for custom behavior
 ///
@@ -91,7 +91,7 @@ extension MusicLibraryServiceProtocol where Self == MusicLibraryService<MPMediaQ
     /// let library = MusicLibrary(service: .live)
     /// ```
     ///
-    /// For testing, pass mock implementations conforming to `MusicLibraryServiceProtocol` instead.
+    /// For testing, pass mock implementations conforming to ``MusicLibraryServiceProtocol`` instead.
     public static var live: Self { MusicLibraryService() }
 }
 
@@ -106,7 +106,7 @@ extension MusicLibraryServiceProtocol where Self == MusicLibraryService<MPMediaQ
 /// let library = MusicLibrary(service: .live)
 /// ```
 ///
-/// For testing or custom implementations, conform to `MusicLibraryServiceProtocol` and inject your implementation.
+/// For testing or custom implementations, conform to ``MusicLibraryServiceProtocol`` and inject your implementation.
 public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServiceProtocol, Sendable {
     public typealias E = MusicLibraryServiceError
     public typealias Q = T
@@ -138,7 +138,7 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
 
     /// Fetches media items matching a predicate with default parameters.
     ///
-    /// Implementation of `MusicLibraryServiceProtocol.fetch(...)` with default comparison type (`.equalTo`)
+    /// Implementation of ``MusicLibraryServiceProtocol/fetch(_:with:comparisonType:groupingType:)`` with default comparison type (`.equalTo`)
     /// and default grouping type (`.title`). Combines the media type predicate with the user-provided predicate.
     public func fetch(
         _ type: MPMediaType,
@@ -160,7 +160,7 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
 
     /// Fetches all media items of a specific type with grouping.
     ///
-    /// Implementation of `MusicLibraryServiceProtocol.fetchAll(...)` that retrieves all items of the specified type
+    /// Implementation of ``MusicLibraryServiceProtocol/fetchAll(_:groupingType:)`` that retrieves all items of the specified type
     /// without additional filtering, organized by the specified grouping type.
     public func fetchAll(
         _ type: MPMediaType,
