@@ -17,6 +17,12 @@ A Swift bridge for MPMediaLibrary integration.
 
 ```swift
 let library = MusicLibrary()
+
+// Optional: Check or request authorization first
+if case .notDetermined = library.authorizationStatus {
+    _ = try await library.requestAuthorization()
+}
+
 let songs = try await library.fetchSongs()
 ```
 
