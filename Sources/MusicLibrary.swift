@@ -6,6 +6,7 @@ import MediaPlayer
 /// This protocol provides methods to query and retrieve music library items with flexible filtering and sorting options.
 /// All methods require music library access authorization before use.
 public protocol MusicLibraryProtocol {
+    var authorizationStatus: MPMediaLibraryAuthorizationStatus { get }
     /// Fetches all media items of a specific type.
     ///
     /// Retrieves all media items matching the specified type from the device's music library.
@@ -76,11 +77,11 @@ public protocol MusicLibraryProtocol {
     /// let songs = try await library.fetchSongs()
     /// ```
     ///
-    /// Fetch songs sorted by title:
+    /// Fetch songs sorted by play count:
     /// ```swift
     /// @Environment(\.library) var library
     /// let sorted = try await library.fetchSongs(
-    ///     sortedBy: \MPMediaItem.title,
+    ///     sortedBy: \MPMediaItem.playCount,
     ///     order: .forward
     /// )
     /// ```
@@ -178,6 +179,16 @@ public protocol MusicLibraryProtocol {
 public final class MusicLibrary: MusicLibraryProtocol {
     private let auth: any AuthorizationManagerProtocol
     private let service: any MusicLibraryServiceProtocol
+
+    /// Returns the current authorization status for music library access.
+    ///
+    /// Queries the system for the current authorization status.
+    /// Does not trigger any user prompts or permission dialogs.
+    ///
+    /// - Returns: The current `MPMediaLibraryAuthorizationStatus`
+    public var authorizationStatus: MPMediaLibraryAuthorizationStatus {
+        auth.status()
+    }
 
     /// Creates a new music library instance.
     ///
