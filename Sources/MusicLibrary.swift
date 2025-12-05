@@ -204,6 +204,14 @@ public protocol MusicLibraryProtocol {
 ///
 ///     var body: some View {
 ///         VStack {
+///             // Optional: Request authorization if not yet determined
+///             if library.authorizationStatus == .notDetermined {
+///                 Button("Request Music Library Access") {
+///                     Task {
+///                         try await library.requestAuthorization()
+///                     }
+///                 }
+///             }
 ///             // Use library here
 ///         }
 ///         .task {
