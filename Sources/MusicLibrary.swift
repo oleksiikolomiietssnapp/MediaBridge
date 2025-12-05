@@ -6,6 +6,33 @@ import MediaPlayer
 /// This protocol provides methods to query and retrieve music library items with flexible filtering and sorting options.
 /// All methods require music library access authorization before use.
 public protocol MusicLibraryProtocol {
+    /// Returns the current authorization status for music library access.
+    ///
+    /// Queries the system for the current authorization status without triggering any user prompts or permission dialogs.
+    /// Use this property to check if the app has permission to access the user's music library.
+    ///
+    /// The authorization status can be one of the following:
+    /// - `.authorized`: The app has permission to access the music library
+    /// - `.denied`: The user has denied permission for music library access
+    /// - `.notDetermined`: The user has not yet responded to the authorization prompt
+    /// - `.restricted`: The app is restricted from accessing the music library (e.g., parental controls)
+    ///
+    /// - Returns: The current `MPMediaLibraryAuthorizationStatus`
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// switch library.authorizationStatus {
+    /// case .authorized:
+    ///     // Safe to fetch music library items
+    /// case .denied, .restricted:
+    ///     // Show error message to user
+    /// case .notDetermined:
+    ///     // Prompt user for authorization
+    /// @unknown default:
+    ///     // Handle future status values
+    /// }
+    /// ```
     var authorizationStatus: MPMediaLibraryAuthorizationStatus { get }
     /// Fetches all media items of a specific type.
     ///
