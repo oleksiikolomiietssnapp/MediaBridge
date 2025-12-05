@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `authorizationStatus` property to `MusicLibraryProtocol` for checking music library access permissions
+- `requestAuthorization()` method to explicitly request music library access from the user
 
 ## [0.3.1] - 2025-12-03
 
