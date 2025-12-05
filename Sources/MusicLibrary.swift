@@ -35,6 +35,13 @@ public protocol MusicLibraryProtocol {
     /// ```
     var authorizationStatus: MPMediaLibraryAuthorizationStatus { get }
 
+    /// Requests music library access authorization from the user.
+    ///
+    /// Presents the system authorization prompt if the user hasn't yet decided.
+    /// If authorization is already determined, returns the current status without prompting.
+    ///
+    /// - Returns: The authorization status after the request
+    /// - Throws: `AuthorizationError` if the request fails
     @discardableResult
     func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus
 
@@ -256,6 +263,22 @@ public final class MusicLibrary: MusicLibraryProtocol {
 
     // MARK: - General calls
 
+    /// Requests music library access authorization from the user.
+    ///
+    /// Presents the system authorization prompt if the user hasn't yet decided.
+    /// If authorization is already determined, returns the current status without prompting.
+    ///
+    /// - Returns: The authorization status after the request
+    /// - Throws: `AuthorizationError` if the request fails
+    ///
+    /// ## Example
+    /// ```swift
+    /// let library = MusicLibrary()
+    /// let status = try await library.requestAuthorization()
+    /// if case .authorized = status {
+    ///     let songs = try await library.fetchSongs()
+    /// }
+    /// ```
     @discardableResult
     public func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus {
         try await auth.authorize()
