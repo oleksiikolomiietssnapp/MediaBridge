@@ -71,3 +71,8 @@ extension SortOrder {
         self = self == .forward ? .reverse : .forward
     }
 }
+
+#Preview {
+    ContentView()
+        .environment(\.library, .accessDenied)
+}
