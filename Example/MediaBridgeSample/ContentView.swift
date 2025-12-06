@@ -57,7 +57,7 @@ struct ContentView: View {
         defer { isLoading = false }
 
         do {
-            songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: order)
+            songs = try await library.songs(sortedBy: \MPMediaItem.skipCount, order: order)
             errorMessage = nil
         } catch {
             errorMessage = error

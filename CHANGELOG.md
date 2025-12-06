@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-12-06
+
+### Added
+- New Swift-like method names for cleaner, more idiomatic API:
+  - `songs()` - fetch all songs without sorting
+  - `songs(sortedBy:order:)` - fetch songs with optional sorting
+  - `songs(matching:comparisonType:)` - fetch songs matching a predicate
+  - `mediaItems(ofType:matching:comparisonType:groupingType:)` - fetch generic media items
+
+### Deprecated
+- `fetchSongs()` - use `songs()` instead
+- `fetchSongs(sortedBy:order:)` - use `songs(sortedBy:order:)` instead
+- `fetchSong(with:comparisonType:)` - use `songs(matching:comparisonType:)` instead
+- `fetch(_:with:comparisonType:groupingType:)` - use `mediaItems(ofType:matching:comparisonType:groupingType:)` instead
+
+### Changed
+- All documentation and examples now use new method names
+- Example app updated to demonstrate new API
+- Old methods remain functional but show deprecation warnings
+
 ## [0.4.1] - 2025-12-06
 
 ### Added
