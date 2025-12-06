@@ -383,6 +383,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await service.fetchAll(type, groupingType: groupingType)
     }
 
+    @available(*, deprecated, renamed: "mediaItems(ofType:matching:_:groupingType:)")
     public func fetch(
         _ type: MPMediaType,
         with predicate: MediaItemPredicateInfo,
@@ -442,6 +443,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await mediaItems(ofType: .music, matching: predicate, comparisonType, groupingType: .title)
     }
 
+    @available(*, deprecated, renamed: "songs()")
     public func fetchSongs<T: Comparable>(
         sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
         order: SortOrder
@@ -449,6 +451,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await songs(sortedBy: sortingKey, order: order)
     }
 
+    @available(*, deprecated, renamed: "songs(matching:comparisonType:)")
     public func fetchSong(
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison,

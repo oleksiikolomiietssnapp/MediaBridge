@@ -10,7 +10,6 @@ import MediaPlayer
         private let fetchedSongs: [MPMediaItem]
         private let filteredSongs: [MPMediaItem]
 
-
         init(
             status: MPMediaLibraryAuthorizationStatus,
             statusAfterRequest: MPMediaLibraryAuthorizationStatus,
