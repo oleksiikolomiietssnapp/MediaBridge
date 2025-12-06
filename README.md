@@ -23,7 +23,7 @@ if library.authorizationStatus != .authorized {
     try await library.requestAuthorization()
 }
 
-let songs = try await library.fetchSongs()
+let songs = try await library.songs()
 ```
 
 For SwiftUI, inject via environment:
@@ -34,7 +34,7 @@ extension EnvironmentValues {
 }
 
 @Environment(\.library) var library
-let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: .reverse)
+let songs = try await library.songs(sortedBy: \MPMediaItem.skipCount, order: .reverse)
 ```
 
 Both the service layer and authorization manager use production implementations by default (`.live`), but you can provide custom implementations for testing or specialized behavior.

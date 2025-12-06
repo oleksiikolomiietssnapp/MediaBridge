@@ -9,9 +9,9 @@ import MediaPlayer
 /// ## Example
 /// ```swift
 /// let library = MusicLibrary()
-/// let taylorSwiftSongs = try await library.fetch(
-///     .music,
-///     with: .artist("Taylor Swift"),
+/// let taylorSwiftSongs = try await library.mediaItems(
+///     ofType: .music,
+///     matching: .artist("Taylor Swift"),
 ///     .contains,
 ///     groupingType: .album
 /// )

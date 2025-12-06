@@ -8,28 +8,28 @@ class MusicLibraryTests {
     @Test func testFetchSongs() async throws {
         let library = MusicLibrary.withMocks
         #expect(library.authorizationStatus == .authorized)
-        let songs = try await library.fetchSongs()
+        let songs = try await library.songs()
         #expect(songs.isEmpty)
     }
 
     @Test func testFetchSortedSongs() async throws {
         let library = MusicLibrary.withMocks
         #expect(library.authorizationStatus == .authorized)
-        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.skipCount, order: .forward)
+        let songs = try await library.songs(sortedBy: \MPMediaItem.skipCount, order: .forward)
         #expect(songs.isEmpty)
     }
 
     @Test func testFetchByExplicitSongs() async throws {
         let library = MusicLibrary.withMocks
         #expect(library.authorizationStatus == .authorized)
-        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.isExplicitItem, order: .forward)
+        let songs = try await library.songs(sortedBy: \MPMediaItem.isExplicitItem, order: .forward)
         #expect(songs.isEmpty)
     }
 
     @Test func testFetchByDateAddedSongs() async throws {
         let library = MusicLibrary.withMocks
         #expect(library.authorizationStatus == .authorized)
-        let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.releaseDate, order: .forward)
+        let songs = try await library.songs(sortedBy: \MPMediaItem.releaseDate, order: .forward)
         #expect(songs.isEmpty)
     }
 
@@ -41,7 +41,7 @@ class MusicLibraryTests {
         )
         #expect(library.authorizationStatus == .denied)
         await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
-            let _ = try await library.fetchSongs()
+            let _ = try await library.songs()
         }
     }
 
@@ -51,7 +51,7 @@ class MusicLibraryTests {
         )
         #expect(library.authorizationStatus == .denied)
         await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
-            let _ = try await library.fetchSongs()
+            let _ = try await library.songs()
         }
     }
 
@@ -61,7 +61,7 @@ class MusicLibraryTests {
         )
         #expect(library.authorizationStatus == .denied)
         await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
-            let _ = try await library.fetchSongs()
+            let _ = try await library.songs()
         }
     }
 
@@ -73,7 +73,7 @@ class MusicLibraryTests {
         )
         #expect(library.authorizationStatus == .denied)
         await #expect(throws: MockMusicLibraryService.MockError.noSongs) {
-            let _ = try await library.fetchSongs()
+            let _ = try await library.songs()
         }
     }
 
@@ -83,7 +83,7 @@ class MusicLibraryTests {
         #expect(library.authorizationStatus == .authorized)
 
         await #expect(throws: MockMusicLibraryService.MockError.noSong) {
-            let _ = try await library.fetchSong(with: .mock)
+            let _ = try await library.songs(matching: .mock)
         }
     }
 }

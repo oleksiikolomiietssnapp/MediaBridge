@@ -48,7 +48,7 @@ public protocol MusicLibraryProtocol {
     /// let library = MusicLibrary()
     /// let status = try await library.requestAuthorization()
     /// if case .authorized = status {
-    ///     let songs = try await library.fetchSongs()
+    ///     let songs = try await library.songs()
     /// }
     /// ```
     @discardableResult
@@ -75,6 +75,7 @@ public protocol MusicLibraryProtocol {
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
 
+    @available(*, deprecated, renamed: "mediaItems(ofType:matching:_:groupingType:)")
     /// Fetches media items matching a specific predicate.
     ///
     /// Queries the music library for items that match the provided predicate condition.
@@ -105,6 +106,7 @@ public protocol MusicLibraryProtocol {
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
 
+    @available(*, deprecated, renamed: "songs(sortedBy:order:)")
     /// Fetches all songs with optional sorting.
     ///
     /// Retrieves all songs from the music library and optionally sorts them by a specified key path.
@@ -121,13 +123,13 @@ public protocol MusicLibraryProtocol {
     /// Fetch unsorted songs:
     /// ```swift
     /// @Environment(\.library) var library
-    /// let songs = try await library.fetchSongs()
+    /// let songs = try await library.songs()
     /// ```
     ///
     /// Fetch songs sorted by play count:
     /// ```swift
     /// @Environment(\.library) var library
-    /// let sorted = try await library.fetchSongs(
+    /// let sorted = try await library.songs(
     ///     sortedBy: \MPMediaItem.playCount,
     ///     order: .forward
     /// )
@@ -136,7 +138,7 @@ public protocol MusicLibraryProtocol {
     /// Fetch songs sorted by skip count:
     /// ```swift
     /// @Environment(\.library) var library
-    /// let frequent = try await library.fetchSongs(
+    /// let frequent = try await library.songs(
     ///     sortedBy: \MPMediaItem.skipCount,
     ///     order: .reverse
     /// )
@@ -146,28 +148,125 @@ public protocol MusicLibraryProtocol {
         order: SortOrder
     ) async throws -> [MPMediaItem]
 
-    /// Fetches a specific song matching a predicate.
+    @available(*, deprecated, renamed: "songs(matching:comparisonType:)")
+    /// Fetches songs matching a predicate.
     ///
     /// Queries the music library for songs matching the provided predicate.
-    /// Typically used to fetch a single song by persistent ID or unique identifier.
+    /// Useful for filtering by artist, title, genre, or other properties.
     ///
     /// - Parameters:
-    ///   - predicate: The predicate to identify the song (e.g., `.persistentID(12345)`)
+    ///   - predicate: The predicate to filter songs (e.g., `.persistentID(12345)`, `.artist("Beatles")`)
     ///   - comparisonType: How to compare the predicate value (defaults to `.equalTo`)
-    /// - Returns: Array of matching songs (typically contains 0 or 1 item)
+    /// - Returns: Array of matching songs
     /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
     ///
     /// ## Example
     /// ```swift
     /// @Environment(\.library) var library
-    /// let songs = try await library.fetchSong(
-    ///     with: .persistentID(12345),
+    /// let songs = try await library.songs(
+    ///     matching: .persistentID(12345),
     ///     comparisonType: .equalTo
     /// )
     /// ```
     func fetchSong(
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaItem]
+
+    /// Fetches all songs with optional sorting.
+    ///
+    /// Retrieves all songs from the music library and optionally sorts them by a specified key path.
+    /// If no sort key is provided, songs are returned unsorted.
+    ///
+    /// - Parameters:
+    ///   - sortingKey: Optional key path to sort by (e.g., `\MPMediaItem.dateAdded`, `\MPMediaItem.skipCount`).
+    ///     If `nil`, results are not sorted.
+    ///   - order: The sort order (`.forward` for ascending, `.reverse` for descending)
+    /// - Returns: Array of songs, sorted if a key is provided
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Examples
+    /// Fetch unsorted songs:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let songs = try await library.songs()
+    /// ```
+    ///
+    /// Fetch songs sorted by play count:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let sorted = try await library.songs(
+    ///     sortedBy: \MPMediaItem.playCount,
+    ///     order: .forward
+    /// )
+    /// ```
+    ///
+    /// Fetch songs sorted by skip count:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let frequent = try await library.songs(
+    ///     sortedBy: \MPMediaItem.skipCount,
+    ///     order: .reverse
+    /// )
+    /// ```
+    func songs<T: Comparable>(
+        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
+        order: SortOrder
+    ) async throws -> [MPMediaItem]
+
+    /// Fetches songs matching a predicate.
+    ///
+    /// Queries the music library for songs matching the provided predicate using the specified comparison type.
+    /// Useful for filtering by artist, title, genre, or other properties.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter songs (e.g., `.persistentID(12345)`, `.artist("Beatles")`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    /// - Returns: Array of matching songs
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let songs = try await library.songs(
+    ///     matching: .artist("Taylor Swift"),
+    ///     comparisonType: .contains
+    /// )
+    /// ```
+    func songs(
+        matching predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaItem]
+
+    /// Fetches media items of a specific type matching a predicate.
+    ///
+    /// Queries the music library for items matching the provided type and predicate.
+    /// This is the most flexible method, allowing you to fetch any media type (music, podcasts, audiobooks)
+    /// with custom filtering and grouping.
+    ///
+    /// - Parameters:
+    ///   - type: The type of media to fetch (`.music`, `.podcast`, etc.)
+    ///   - predicate: The predicate to filter items
+    ///   - comparisonType: How to compare the predicate value
+    ///   - groupingType: How to group the returned items
+    /// - Returns: Array of media items matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let items = try await library.mediaItems(
+    ///     ofType: .music,
+    ///     matching: .genre("Rock"),
+    ///     .contains,
+    ///     groupingType: .album
+    /// )
+    /// ```
+    func mediaItems(
+        ofType type: MPMediaType,
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
 }
 
@@ -189,8 +288,8 @@ public protocol MusicLibraryProtocol {
 /// Create an instance and use it directly:
 /// ```swift
 /// let library = MusicLibrary()
-/// let songs = try await library.fetchSongs()
-/// let artist = try await library.fetch(.music, with: .artist("Taylor Swift"), .contains, groupingType: .album)
+/// let songs = try await library.songs()
+/// let artist = try await library.mediaItems(ofType: .music, matching: .artist("Taylor Swift"), .contains, groupingType: .album)
 /// ```
 ///
 /// For SwiftUI apps, inject the library via environment values:
@@ -215,7 +314,7 @@ public protocol MusicLibraryProtocol {
 ///             // Use library here
 ///         }
 ///         .task {
-///             let songs = try await library.fetchSongs(
+///             let songs = try await library.songs(
 ///                 sortedBy: \MPMediaItem.skipCount,
 ///                 order: .reverse
 ///             )
@@ -290,13 +389,22 @@ public final class MusicLibrary: MusicLibraryProtocol {
         _ comparisonType: MPMediaPredicateComparison,
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem] {
+        return try await mediaItems(ofType: type, matching: predicate, comparisonType, groupingType: groupingType)
+    }
+
+    public func mediaItems(
+        ofType type: MPMediaType,
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItem] {
         try await checkIfAuthorized()
         return try await service.fetch(type, with: predicate, comparisonType: comparisonType, groupingType: groupingType)
     }
 
     // MARK: - Specific calls
 
-    public func fetchSongs<T: Comparable>(
+    public func songs<T: Comparable>(
         sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
         order: SortOrder
     ) async throws -> [MPMediaItem] {
@@ -327,11 +435,25 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return songs
     }
 
+    public func songs(
+        matching predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaItem] {
+        return try await mediaItems(ofType: .music, matching: predicate, comparisonType, groupingType: .title)
+    }
+
+    public func fetchSongs<T: Comparable>(
+        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
+        order: SortOrder
+    ) async throws -> [MPMediaItem] {
+        return try await songs(sortedBy: sortingKey, order: order)
+    }
+
     public func fetchSong(
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison,
     ) async throws -> [MPMediaItem] {
-        return try await fetch(.music, with: predicate, comparisonType, groupingType: .title)
+        return try await songs(matching: predicate, comparisonType: comparisonType)
     }
 
     // MARK: - Private methods
@@ -352,6 +474,46 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// Fetches all songs without sorting.
     ///
     /// Convenience method that fetches all songs with default behavior (unsorted, forward order).
+    /// Equivalent to calling `songs(sortedBy: nil, order: .forward)`.
+    ///
+    /// - Returns: Array of all songs in the library, unsorted
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let allSongs = try await library.songs()
+    /// ```
+    public func songs() async throws -> [MPMediaItem] {
+        return try await songs(sortedBy: (KeyPath<MPMediaItem, Never> & Sendable)?.none, order: .forward)
+    }
+
+    /// Fetches songs matching a predicate with default comparison type.
+    ///
+    /// Convenience method that uses `.equalTo` as the default comparison type.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter songs
+    ///   - comparisonType: How to compare the predicate value (defaults to `.equalTo`)
+    /// - Returns: Array of matching songs
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let song = try await library.songs(matching: .persistentID(12345))
+    /// ```
+    public func songs(
+        matching predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo
+    ) async throws -> [MPMediaItem] {
+        return try await songs(matching: predicate, comparisonType: comparisonType)
+    }
+
+    @available(*, deprecated, renamed: "songs()")
+    /// Fetches all songs without sorting.
+    ///
+    /// Convenience method that fetches all songs with default behavior (unsorted, forward order).
     /// Equivalent to calling `fetchSongs(sortedBy: nil, order: .forward)`.
     ///
     /// - Returns: Array of all songs in the library, unsorted
@@ -363,9 +525,10 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// let allSongs = try await library.fetchSongs()
     /// ```
     public func fetchSongs() async throws -> [MPMediaItem] {
-        return try await fetchSongs(sortedBy: (KeyPath<MPMediaItem, Never> & Sendable)?.none, order: .forward)
+        return try await songs()
     }
 
+    @available(*, deprecated, renamed: "songs(matching:comparisonType:)")
     /// Fetches a specific song with a default comparison type.
     ///
     /// Convenience method that fetches a song matching the provided predicate,
@@ -387,6 +550,6 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
         with predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison = .equalTo
     ) async throws -> [MPMediaItem] {
-        return try await fetchSong(with: predicate, comparisonType: comparisonType)
+        return try await songs(matching: predicate, comparisonType: comparisonType)
     }
 }

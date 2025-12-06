@@ -121,7 +121,7 @@ extension MyServiceProtocol where Self == MockMyService {
 - **Extensions:** Use format `Type+Feature.swift` (e.g., `MPMediaType+Comparable.swift`)
 - **Protocols:** Descriptive names ending in `Protocol` (e.g., `MusicLibraryServiceProtocol`)
 - **Factory methods:** `.live` for production, `.mock` for testing
-- **Properties/Methods:** camelCase (e.g., `fetchSongs()`, `authorizationStatus`)
+- **Properties/Methods:** camelCase (e.g., `songs()`, `authorizationStatus`)
 
 ### Code Patterns
 
@@ -182,7 +182,7 @@ class MusicLibraryTests {
     @Test("fetches songs successfully")
     func testFetchSongs() async throws {
         let library = MusicLibrary(service: .mock)
-        let songs = try await library.fetchSongs()
+        let songs = try await library.songs()
         #expect(!songs.isEmpty)
     }
 
@@ -191,7 +191,7 @@ class MusicLibraryTests {
         let library = MusicLibrary(
             authorizationManager: .mock(status: .denied)
         )
-        let songs = try await library.fetchSongs()
+        let songs = try await library.songs()
         #expect(songs.isEmpty)
     }
 }
@@ -229,10 +229,10 @@ All public APIs must have documentation:
 /// ## Example
 /// ```swift
 /// let library = MusicLibrary()
-/// let songs = try await library.fetchSongs(sortedBy: \MPMediaItem.playCount, order: .reverse)
+/// let songs = try await library.songs(sortedBy: \MPMediaItem.playCount, order: .reverse)
 /// print("Found \(songs.count) songs")
 /// ```
-public func fetchSongs(
+public func songs(
     sortedBy: KeyPath<MPMediaItem, Comparable> = \MPMediaItem.title,
     order: SortOrder = .forward
 ) async throws -> [MPMediaItem]

@@ -36,10 +36,24 @@ import MediaPlayer
             _ comparisonType: MPMediaPredicateComparison,
             groupingType: MPMediaGrouping
         ) async throws -> [MPMediaItem] { fetchedMedia }
+        public func mediaItems(
+            ofType type: MPMediaType,
+            matching predicate: MediaBridge.MediaItemPredicateInfo,
+            _ comparisonType: MPMediaPredicateComparison,
+            groupingType: MPMediaGrouping
+        ) async throws -> [MPMediaItem] { fetchedMedia }
+
         public func fetchSongs<T>(sortedBy sortingKey: (any KeyPath<MPMediaItem, T> & Sendable)?, order: SortOrder) async throws
             -> [MPMediaItem]
         where T: Comparable { fetchedSongs }
+        public func songs<T>(sortedBy sortingKey: (any KeyPath<MPMediaItem, T> & Sendable)?, order: SortOrder) async throws
+            -> [MPMediaItem]
+        where T: Comparable { fetchedSongs }
+
         public func fetchSong(with predicate: MediaBridge.MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws
+            -> [MPMediaItem]
+        { filteredSongs }
+        public func songs(matching predicate: MediaBridge.MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws
             -> [MPMediaItem]
         { filteredSongs }
     }

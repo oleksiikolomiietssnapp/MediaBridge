@@ -18,7 +18,7 @@ For most use cases, simply create a `MusicLibrary` instance and start fetching:
 
 ```swift
 let library = MusicLibrary()
-let songs = try await library.fetchSongs()
+let songs = try await library.songs()
 ```
 
 Or inject it into SwiftUI views via environment values:
