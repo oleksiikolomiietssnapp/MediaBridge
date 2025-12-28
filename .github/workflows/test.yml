@@ -4,12 +4,21 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
-  test:
+  coverage:
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Swift Coverage Action (Phase 1 Test)
+      - name: Run Swift Coverage Action (Multi-Platform Test)
         uses: Snapp-Mobile/swift-coverage-action@feature/platform-detection
+        with:
+          macos-version: "latest"
+          xcode-version: ""  # Use system default
+          coverage-comment-header: "### 📊 Code Coverage (Multi-Platform Test)"
+          post-comment: true
