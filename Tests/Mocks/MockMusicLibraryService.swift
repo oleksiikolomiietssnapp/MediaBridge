@@ -12,11 +12,17 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
     init(
         fetchSongError: MockError? = nil,
         fetchSongsError: MockError? = nil,
-        songs: [MPMediaItem] = [.mock]
+        songs: [MPMediaItem] = [.mock],
+        albums: [MPMediaItemCollection] = [.mock],
+        albumsError: MockError? = nil,
+        fetchAlbumsError: MockError? = nil
     ) {
         self.fetchSongError = fetchSongError
         self.fetchSongsError = fetchSongsError
         self.songs = songs
+        self.albums = albums
+        self.albumsError = albumsError
+        self.fetchAlbumsError = fetchAlbumsError
     }
 
     @MainActor var fetchSongsError: MockError?
@@ -42,11 +48,34 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         throw fetchSongError
     }
 
+    @MainActor var albums: [MPMediaItemCollection]
+    @MainActor var albumsError: MockError?
+    func fetchCollections(
+        _ type: MPMediaType,
+        with predicate: MediaBridge.MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection] {
+        guard let albumsError = await albumsError else {
+            return await albums
+        }
+        throw albumsError
+    }
+
+    @MainActor var fetchAlbumsError: MockError?
+    func fetchAllCollections(_ type: MPMediaType, groupingType: MPMediaGrouping) async throws -> [MPMediaItemCollection] {
+        guard let fetchAlbumsError = await fetchAlbumsError else {
+            return []
+        }
+        throw fetchAlbumsError
+    }
+
+
 }
 
 extension MusicLibraryServiceProtocol where Self == MockMusicLibraryService {
     static var mock: MockMusicLibraryService {
-        MockMusicLibraryService()
+        MockMusicLibraryService(albums: [])
     }
 }
 
@@ -54,5 +83,11 @@ extension MPMediaItem: @unchecked @retroactive Sendable {}
 extension MPMediaItem {
     static var mock: MPMediaItem {
         MPMediaItem()
+    }
+}
+extension MPMediaItemCollection: @unchecked @retroactive Sendable {}
+extension MPMediaItemCollection {
+    static var mock: MPMediaItemCollection {
+        MPMediaItemCollection(items: [])
     }
 }

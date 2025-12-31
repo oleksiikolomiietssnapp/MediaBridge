@@ -41,7 +41,7 @@ public protocol MusicLibraryServiceProtocol: Sendable {
     ///   - type: The type of media to fetch (typically `.music`)
     ///   - groupingType: How to organize the returned items
     /// - Returns: Array of media items matching the type
-    /// - Throws: An error of type `E` if the query fails
+    /// - Throws: An error of specific type if the query fails 
     ///
     /// ## Example
     /// ```swift
@@ -51,6 +51,28 @@ public protocol MusicLibraryServiceProtocol: Sendable {
         _ type: MPMediaType,
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
+
+    /// Fetches media items collection matching a predicate with optional filtering.
+    ///
+    /// - Parameters:
+    ///   - type: The type of media to fetch (typically `.music`)
+    ///   - predicate: The predicate to filter items
+    ///   - comparisonType: How to compare the predicate value (e.g., `.equalTo`, `.contains`)
+    ///   - groupingType: How to organize the returned items
+    /// - Returns: Array of media items matching the predicate
+    /// - Throws: An error of specific type if the query fails
+    func fetchCollections(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection]
+
+    /// Fetches all media collections of a specific type with optional grouping.
+    func fetchAllCollections(
+        _ type: MPMediaType,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection]
 
     /// Fetches media items matching a predicate with optional filtering.
     ///
@@ -63,7 +85,7 @@ public protocol MusicLibraryServiceProtocol: Sendable {
     ///   - comparisonType: How to compare the predicate value (e.g., `.equalTo`, `.contains`)
     ///   - groupingType: How to organize the returned items
     /// - Returns: Array of media items matching the predicate
-    /// - Throws: An error of type `E` if the query fails
+    /// - Throws: An error of specific type if the query fails
     ///
     /// ## Example
     /// ```swift
@@ -116,6 +138,12 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
         /// No songs were found matching the query.
         case noSongsFound
 
+        /// No collections were found matching the query.
+        case noCollectionsFound
+
+        /// No album was found matching the specified predicate.
+        case noCollectionFound(MediaItemPredicateInfo)
+
         /// No song was found matching the specified predicate.
         case noSongFound(MediaItemPredicateInfo)
 
@@ -124,6 +152,10 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
             switch self {
             case .noSongsFound:
                 "No songs found in your music library. Try adding music to your library and try again."
+            case .noCollectionsFound:
+                "No media collections found in your music library. Try adding music to your library and try again."
+            case .noCollectionFound(let predicate):
+                "Couldn't find an album matching \(predicate.description). Check your filters and try again."
             case .noSongFound(let predicate):
                 "Couldn't find a song matching \(predicate.description). Check your filters and try again."
             }
@@ -146,13 +178,7 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
         comparisonType: MPMediaPredicateComparison = .equalTo,
         groupingType: MPMediaGrouping = .title
     ) async throws -> [MPMediaItem] {
-        let typePredicate = MediaItemPredicateInfo.mediaType(type)
-        let typeFilter = typePredicate.predicate(using: comparisonType)
-        let additionalFilter = predicate.predicate(using: comparisonType)
-
-        let query = prepareQuery(with: [typeFilter, additionalFilter], groupingType: groupingType)
-
-        guard let songs = query.items else {
+        guard let songs = query(type, withFilter: predicate, comparisonType, groupingType).items else {
             throw E.noSongFound(predicate)
         }
         return songs
@@ -166,20 +192,68 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
         _ type: MPMediaType,
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem] {
-        let typePredicate = MediaItemPredicateInfo.mediaType(type)
-        let typeFilter = typePredicate.predicate()
-
-        let query = prepareQuery(with: [typeFilter], groupingType: groupingType)
-
-        guard let songs = query.items else {
+        guard let songs = query(type, groupingType).items else {
             throw E.noSongsFound
         }
         return songs
     }
 
+    /// Fetches all media collections of a specific type with grouping.
+    ///
+    /// Implementation of ``MusicLibraryServiceProtocol/fetchAll(_:groupingType:)`` that retrieves all items of the specified type
+    /// without additional filtering, organized by the specified grouping type.
+    public func fetchAllCollections(
+        _ type: MPMediaType,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection] {
+        guard let songs = query(type, groupingType).collections else {
+            throw E.noCollectionsFound
+        }
+        return songs
+    }
+
+    /// Fetches media item collection matching a predicate with default parameters.
+    public func fetchCollections(
+        _ type: MPMediaType,
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo,
+        groupingType: MPMediaGrouping = .title
+    ) async throws -> [MPMediaItemCollection] {
+        guard let collections = query(type, withFilter: predicate, comparisonType, groupingType).collections else {
+            throw E.noCollectionFound(predicate)
+        }
+        return collections
+    }
+
     // MARK: - Private Helpers
 
-    private func prepareQuery(with predicates: Set<MPMediaPredicate>?, groupingType: MPMediaGrouping) -> Q {
+    private func query(
+        _ type: MPMediaType,
+        _ groupingType: MPMediaGrouping
+    ) -> Q {
+        let typePredicate = MediaItemPredicateInfo.mediaType(type)
+        let typeFilter = typePredicate.predicate()
+
+        return prepareQuery(with: [typeFilter], groupingType: groupingType)
+    }
+
+    private func query(
+        _ type: MPMediaType,
+        withFilter predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison,
+        _ groupingType: MPMediaGrouping
+    ) -> Q {
+        let typePredicate = MediaItemPredicateInfo.mediaType(type)
+        let typeFilter = typePredicate.predicate(using: comparisonType)
+        let additionalFilter = predicate.predicate(using: comparisonType)
+
+        return prepareQuery(with: [typeFilter, additionalFilter], groupingType: groupingType)
+    }
+
+    private func prepareQuery(
+        with predicates: Set<MPMediaPredicate>?,
+        groupingType: MPMediaGrouping
+    ) -> Q {
         var query = Q(filterPredicates: predicates)
         query.groupingType = groupingType
         return query

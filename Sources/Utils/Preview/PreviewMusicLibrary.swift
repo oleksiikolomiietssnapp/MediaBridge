@@ -9,6 +9,7 @@ import MediaPlayer
         private let fetchedMedia: [MPMediaItem]
         private let fetchedSongs: [MPMediaItem]
         private let filteredSongs: [MPMediaItem]
+        private let filteredAlbums: [MPMediaItemCollection]
 
         init(
             status: MPMediaLibraryAuthorizationStatus,
@@ -16,7 +17,8 @@ import MediaPlayer
             fetchedAllMedia: [MPMediaItem],
             fetchedMedia: [MPMediaItem],
             fetchedSongs: [MPMediaItem],
-            filteredSongs: [MPMediaItem]
+            filteredSongs: [MPMediaItem],
+            filteredAlbums: [MPMediaItemCollection]
         ) {
             self.status = status
             self.statusAfterRequest = statusAfterRequest
@@ -24,6 +26,7 @@ import MediaPlayer
             self.fetchedMedia = fetchedMedia
             self.fetchedSongs = fetchedSongs
             self.filteredSongs = filteredSongs
+            self.filteredAlbums = filteredAlbums
         }
 
         public var authorizationStatus: MPMediaLibraryAuthorizationStatus { status }
@@ -41,6 +44,12 @@ import MediaPlayer
             _ comparisonType: MPMediaPredicateComparison,
             groupingType: MPMediaGrouping
         ) async throws -> [MPMediaItem] { fetchedMedia }
+        public func mediaItemCollections(
+            ofType type: MPMediaType,
+            matching predicate: MediaItemPredicateInfo,
+            _ comparisonType: MPMediaPredicateComparison,
+            groupingType: MPMediaGrouping
+        ) async throws -> [MPMediaItemCollection] { filteredAlbums }
 
         public func fetchSongs<T>(sortedBy sortingKey: (any KeyPath<MPMediaItem, T> & Sendable)?, order: SortOrder) async throws
             -> [MPMediaItem]
@@ -55,5 +64,12 @@ import MediaPlayer
         public func songs(matching predicate: MediaBridge.MediaItemPredicateInfo, comparisonType: MPMediaPredicateComparison) async throws
             -> [MPMediaItem]
         { filteredSongs }
+
+        public func albums(
+            matching predicate: MediaItemPredicateInfo,
+            _ comparisonType: MPMediaPredicateComparison,
+            groupingType: MPMediaGrouping
+        ) async throws -> [MPMediaItemCollection]
+        { filteredAlbums }
     }
 #endif

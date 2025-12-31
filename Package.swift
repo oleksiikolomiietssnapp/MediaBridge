@@ -6,7 +6,7 @@ let package = Package(
     name: "MediaBridge",
     platforms: [
         .iOS(.v15),
-        .visionOS(.v1)
+        .visionOS(.v1),
     ],
     products: [
         .library(

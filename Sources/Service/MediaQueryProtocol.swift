@@ -33,6 +33,12 @@ public protocol MediaQueryProtocol {
     /// or `nil` if the query has not been executed or returned no results.
     var items: [MPMediaItem]? { get }
 
+    /// The media items collection matching the query criteria.
+    ///
+    /// Returns an array of `MPMediaItemCollection` objects that match the query predicates,
+    /// or `nil` if the query has not been executed or returned no results.
+    var collections: [MPMediaItemCollection]? { get }
+
     /// The grouping type used to organize query results.
     ///
     /// Controls how the media items are grouped in the results. Can be modified

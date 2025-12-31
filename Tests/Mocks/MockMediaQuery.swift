@@ -2,32 +2,38 @@ import MediaPlayer
 
 @testable import MediaBridge
 
-class MockMediaQueryWithTwoItems: MediaQueryProtocol {
+class MockMediaQueryWithFewMedia: MediaQueryProtocol {
     var items: [MPMediaItem]?
+    var collections: [MPMediaItemCollection]?
     var groupingType: MPMediaGrouping
 
     required init(filterPredicates: Set<MPMediaPredicate>? = nil) {
         items = [.mock, .mock]
+        collections = [.mock, .mock]
         groupingType = .title
     }
 }
 
-class MockMediaQueryWithNoItems: MediaQueryProtocol {
+class MockMediaQueryWithNoMedia: MediaQueryProtocol {
     var items: [MPMediaItem]?
+    var collections: [MPMediaItemCollection]?
     var groupingType: MPMediaGrouping
 
     required init(filterPredicates: Set<MPMediaPredicate>? = nil) {
         items = []
+        collections = []
         groupingType = .title
     }
 }
 
-class MockMediaQueryWithNilItems: MediaQueryProtocol {
+class MockMediaQueryWithNilMedia: MediaQueryProtocol {
     var items: [MPMediaItem]?
+    var collections: [MPMediaItemCollection]?
     var groupingType: MPMediaGrouping
 
     required init(filterPredicates: Set<MPMediaPredicate>? = nil) {
         items = nil
+        collections = nil
         groupingType = .title
     }
 }
