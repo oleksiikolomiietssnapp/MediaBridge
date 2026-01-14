@@ -22,7 +22,7 @@ let package = Package(
         .testTarget(
             name: "MediaBridgeTests",
             dependencies: ["MediaBridge"],
-            path: "Tests",
+            path: "Tests"
         ),
     ]
 )
