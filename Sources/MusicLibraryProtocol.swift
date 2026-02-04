@@ -171,6 +171,30 @@ public protocol MusicLibraryProtocol {
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItem]
 
+    /// Fetches media item collections of a specific type matching a predicate.
+    ///
+    /// Queries the music library for item collections matching the provided type and predicate.
+    /// This is the collection equivalent of ``mediaItems(ofType:matching:_:groupingType:)``, allowing you to
+    /// fetch grouped results (e.g., albums) for any media type with custom filtering and grouping.
+    ///
+    /// - Parameters:
+    ///   - type: The type of media to fetch (`.music`, `.podcast`, etc.)
+    ///   - predicate: The predicate to filter items
+    ///   - comparisonType: How to compare the predicate value
+    ///   - groupingType: How to group the returned collections
+    /// - Returns: Array of media item collections matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let albums = try await library.mediaItemCollections(
+    ///     ofType: .music,
+    ///     matching: .artist("Taylor Swift"),
+    ///     .contains,
+    ///     groupingType: .album
+    /// )
+    /// ```
     func mediaItemCollections(
         ofType type: MPMediaType,
         matching predicate: MediaItemPredicateInfo,
