@@ -91,7 +91,7 @@ public enum MediaItemPredicateInfo: Sendable {
         case .title: MPMediaItemPropertyTitle
 
         case .albumTitle: MPMediaItemPropertyAlbumTitle
-        case .albumID: MPMediaItemPropertyArtistPersistentID
+        case .albumID: MPMediaItemPropertyAlbumPersistentID
 
         case .artist: MPMediaItemPropertyArtist
         case .artistID: MPMediaItemPropertyArtistPersistentID

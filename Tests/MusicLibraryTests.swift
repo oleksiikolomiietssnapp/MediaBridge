@@ -33,6 +33,13 @@ class MusicLibraryTests {
         #expect(songs.isEmpty)
     }
 
+    @Test func testFetchAlbums() async throws {
+        let library = MusicLibrary.withMocks
+        #expect(library.authorizationStatus == .authorized)
+        let albums = try await library.albums(matching: .title(""), .equalTo, groupingType: .album)
+        #expect(albums.isEmpty)
+    }
+
     // Failures
 
     @Test func testSongs_Unauthorized() async throws {
