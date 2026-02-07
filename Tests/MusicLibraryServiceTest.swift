@@ -64,7 +64,7 @@ struct MusicLibraryServiceTest {
         let service: any MusicLibraryServiceProtocol = MusicLibraryService<MockMediaQueryWithNilMedia>()
 
         let predicateInfo = MediaItemPredicateInfo.title("Title")
-        let expectedError = MusicLibraryService<MockMediaQueryWithNilMedia>.E.noSongFound(predicateInfo)
+        let expectedError = MusicLibraryService<MockMediaQueryWithNilMedia>.E.noItemFound(predicateInfo)
 
         await #expect(throws: expectedError) {
             let _ = try await service.fetch(
@@ -79,7 +79,7 @@ struct MusicLibraryServiceTest {
     @Test func testFetchAll_NilItems() async throws {
         let service: any MusicLibraryServiceProtocol = MusicLibraryService<MockMediaQueryWithNilMedia>()
 
-        let expectedError = MusicLibraryService<MockMediaQueryWithNilMedia>.E.noSongsFound
+        let expectedError = MusicLibraryService<MockMediaQueryWithNilMedia>.E.noItemsFound
 
         await #expect(throws: expectedError) {
             let _ = try await service.fetchAll(.music, groupingType: .album)
