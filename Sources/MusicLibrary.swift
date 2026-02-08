@@ -217,8 +217,8 @@ public final class MusicLibrary: MusicLibraryProtocol {
     }
 
     public func albums<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItemCollection, T> & Sendable)? = nil,
-        order: SortOrder = .reverse
+        sortedBy sortingKey: (KeyPath<MPMediaItemCollection, T> & Sendable)? = (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none,
+        order: SortOrder
     ) async throws -> [MPMediaItemCollection] {
         try await checkIfAuthorized()
         let albums = try await service.fetchAllCollections(.music, groupingType: .album)

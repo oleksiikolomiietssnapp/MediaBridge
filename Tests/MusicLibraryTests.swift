@@ -57,7 +57,7 @@ class MusicLibraryTests {
     @Test func testFetchAlbums_Unsorted() async throws {
         let library = MusicLibrary.withMocks
         #expect(library.authorizationStatus == .authorized)
-        let albums = try await library.albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .forward)
+        let albums = try await library.albums()
         #expect(albums.isEmpty)
     }
 

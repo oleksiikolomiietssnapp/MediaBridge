@@ -355,7 +355,24 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     ) async throws -> [MPMediaItem] {
         return try await songs(matching: predicate, comparisonType: comparisonType)
     }
-    
+
+    /// Fetches all albums without sorting.
+    ///
+    /// Convenience method that fetches all albums with default behavior (reverse order).
+    /// Equivalent to calling `albums(sortedBy: nil, order: .reverse)`.
+    ///
+    /// - Returns: Array of all albums in the library, in reverse order
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let allAlbums = try await library.albums()
+    /// ```
+    public func albums() async throws -> [MPMediaItemCollection] {
+        return try await albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .reverse)
+    }
+
     // MARK: - Deprecated
     @available(*, deprecated, renamed: "songs()")
     /// Fetches all songs without sorting.
