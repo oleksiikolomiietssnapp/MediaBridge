@@ -40,6 +40,27 @@ class MusicLibraryTests {
         #expect(albums.isEmpty)
     }
 
+    @Test func testFetchAlbums_SortedByCount() async throws {
+        let library = MusicLibrary.withMocks
+        #expect(library.authorizationStatus == .authorized)
+        let albums = try await library.albums(sortedBy: \MPMediaItemCollection.count, order: .forward)
+        #expect(albums.isEmpty)
+    }
+
+    @Test func testFetchAlbums_SortedByCountReverse() async throws {
+        let library = MusicLibrary.withMocks
+        #expect(library.authorizationStatus == .authorized)
+        let albums = try await library.albums(sortedBy: \MPMediaItemCollection.count, order: .reverse)
+        #expect(albums.isEmpty)
+    }
+
+    @Test func testFetchAlbums_Unsorted() async throws {
+        let library = MusicLibrary.withMocks
+        #expect(library.authorizationStatus == .authorized)
+        let albums = try await library.albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .forward)
+        #expect(albums.isEmpty)
+    }
+
     // Failures
 
     @Test func testSongs_Unauthorized() async throws {
@@ -91,6 +112,41 @@ class MusicLibraryTests {
 
         await #expect(throws: MockMusicLibraryService.MockError.noSong) {
             let _ = try await library.songs(matching: .mock)
+        }
+    }
+
+    @Test func testFetchAlbums_FailingService() async throws {
+        let service = MockMusicLibraryService(fetchAlbumsError: .noAlbums)
+        let library = MusicLibrary(mockService: service)
+        #expect(library.authorizationStatus == .authorized)
+
+        await #expect(throws: MockMusicLibraryService.MockError.noAlbums) {
+            let _ = try await library.albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .forward)
+        }
+    }
+
+    @Test func testFetchAlbums_MatchingPredicate_Failure() async throws {
+        let service = MockMusicLibraryService(albumsError: .noAlbum)
+        let library = MusicLibrary(mockService: service)
+        #expect(library.authorizationStatus == .authorized)
+
+        await #expect(throws: MockMusicLibraryService.MockError.noAlbum) {
+            let _ = try await library.albums(
+                matching: .albumArtist("Test Artist"),
+                .equalTo,
+                groupingType: .album
+            )
+        }
+    }
+
+    @Test func testAlbums_Unauthorized() async throws {
+        let library = MusicLibrary(
+            mockAuth: .mock(isAuthorized: false, authError: .mockError, authStatus: .denied)
+        )
+        #expect(library.authorizationStatus == .denied)
+
+        await #expect(throws: MockAuthorizationManager.MockAuthError.mockError) {
+            let _ = try await library.albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .forward)
         }
     }
 }

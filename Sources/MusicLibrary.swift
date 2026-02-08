@@ -216,6 +216,21 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return songs
     }
 
+    public func albums<T: Comparable>(
+        sortedBy sortingKey: (KeyPath<MPMediaItemCollection, T> & Sendable)? = nil,
+        order: SortOrder = .reverse
+    ) async throws -> [MPMediaItemCollection] {
+        try await checkIfAuthorized()
+        let albums = try await service.fetchAllCollections(.music, groupingType: .album)
+
+        if let sortingKey {
+            let sorted = albums.sorted(using: KeyPathComparator(sortingKey, order: order))
+            return sorted
+        }
+
+        return albums
+    }
+
     public func songs(
         matching predicate: MediaItemPredicateInfo,
         comparisonType: MPMediaPredicateComparison

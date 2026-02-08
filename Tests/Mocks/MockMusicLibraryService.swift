@@ -6,7 +6,7 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
     typealias Q = MPMediaQuery
 
     enum MockError: Error {
-        case noSong, noSongs
+        case noSong, noSongs, noAlbum, noAlbums
     }
 
     init(
