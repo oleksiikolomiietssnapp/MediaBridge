@@ -51,10 +51,10 @@ import MediaPlayer
             groupingType: MPMediaGrouping
         ) async throws -> [MPMediaItemCollection] { filteredAlbums }
 
-        public func fetchSongs<T>(sortedBy sortingKey: (any KeyPath<MPMediaItem, T> & Sendable)?, order: SortOrder) async throws
+        public func fetchSongs<T>(sortedBy sortingKey: SortKey<MPMediaItem, T>?, order: SortOrder) async throws
             -> [MPMediaItem]
         where T: Comparable { fetchedSongs }
-        public func songs<T>(sortedBy sortingKey: (any KeyPath<MPMediaItem, T> & Sendable)?, order: SortOrder) async throws
+        public func songs<T>(sortedBy sortingKey: SortKey<MPMediaItem, T>?, order: SortOrder) async throws
             -> [MPMediaItem]
         where T: Comparable { fetchedSongs }
 
@@ -71,5 +71,9 @@ import MediaPlayer
             groupingType: MPMediaGrouping
         ) async throws -> [MPMediaItemCollection]
         { filteredAlbums }
+
+        public func albums<T>(sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?, order: SortOrder) async throws
+            -> [MPMediaItemCollection]
+        where T: Comparable { filteredAlbums }
     }
 #endif

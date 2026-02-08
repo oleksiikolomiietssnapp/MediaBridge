@@ -116,7 +116,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
     public func requestAuthorization() async throws -> MPMediaLibraryAuthorizationStatus {
         try await auth.authorize()
     }
-    
+
     // MARK: - General Media Queries
 
     /// Fetches all media items of a specific type.
@@ -186,7 +186,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
     // MARK: - Specific calls
 
     public func songs<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
+        sortedBy sortingKey: SortKey<MPMediaItem, T>?,
         order: SortOrder
     ) async throws -> [MPMediaItem] {
         #if DEBUG
@@ -217,7 +217,7 @@ public final class MusicLibrary: MusicLibraryProtocol {
     }
 
     public func albums<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItemCollection, T> & Sendable)? = (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none,
+        sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?,
         order: SortOrder
     ) async throws -> [MPMediaItemCollection] {
         try await checkIfAuthorized()

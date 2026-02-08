@@ -112,7 +112,7 @@ public protocol MusicLibraryProtocol {
     /// )
     /// ```
     func songs<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
+        sortedBy sortingKey: SortKey<MPMediaItem, T>?,
         order: SortOrder
     ) async throws -> [MPMediaItem]
 
@@ -202,14 +202,28 @@ public protocol MusicLibraryProtocol {
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItemCollection]
 
-    /// Return albums item collection
+    /// Fetches album collections matching a predicate.
+    ///
+    /// Convenience method for fetching music albums grouped by the specified grouping type.
+    /// This is a specialized version of ``mediaItemCollections(ofType:matching:_:groupingType:)``
+    /// that's pre-configured for music albums.
     ///
     /// - Parameters:
-    ///   - predicate: The predicate to filter songs (e.g., `.persistentID(12345)`, `.artist("Beatles")`)
+    ///   - predicate: The predicate to filter albums (e.g., `.albumArtist("The Beatles")`, `.genre("Rock")`)
     ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
-    ///   - groupingType: How to group the returned items
-    /// - Returns: Array of matching songs
+    ///   - groupingType: How to group the returned collections (typically `.album` or `.albumArtist`)
+    /// - Returns: Array of album collections matching the criteria
     /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let beatlesAlbums = try await library.albums(
+    ///     matching: .albumArtist("The Beatles"),
+    ///     .equalTo,
+    ///     groupingType: .album
+    /// )
+    /// ```
     func albums(
         matching predicate: MediaItemPredicateInfo,
         _ comparisonType: MPMediaPredicateComparison,
@@ -255,9 +269,41 @@ public protocol MusicLibraryProtocol {
     /// )
     /// ```
     func fetchSongs<T: Comparable>(
-        sortedBy sortingKey: (KeyPath<MPMediaItem, T> & Sendable)?,
+        sortedBy sortingKey: SortKey<MPMediaItem, T>?,
         order: SortOrder
     ) async throws -> [MPMediaItem]
+
+    /// Fetches all albums with optional sorting.
+    ///
+    /// Retrieves all albums from the music library and optionally sorts them by a specified key path.
+    /// If no sort key is provided, albums are returned unsorted.
+    ///
+    /// - Parameters:
+    ///   - sortingKey: Optional key path to sort by (e.g., `\MPMediaItemCollection.count`).
+    ///     If `nil`, results are not sorted.
+    ///   - order: The sort order (`.forward` for ascending, `.reverse` for descending)
+    /// - Returns: Array of albums, sorted if a key is provided
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Examples
+    /// Fetch albums sorted by track count:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let albums = try await library.albums(
+    ///     sortedBy: \MPMediaItemCollection.count,
+    ///     order: .reverse
+    /// )
+    /// ```
+    ///
+    /// Fetch unsorted albums:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let albums = try await library.albums()
+    /// ```
+    func albums<T: Comparable>(
+        sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?,
+        order: SortOrder
+    ) async throws -> [MPMediaItemCollection]
 
     @available(*, deprecated, renamed: "songs(matching:comparisonType:)")
     /// Fetches songs matching a predicate.
@@ -331,7 +377,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// let allSongs = try await library.songs()
     /// ```
     public func songs() async throws -> [MPMediaItem] {
-        return try await songs(sortedBy: (KeyPath<MPMediaItem, Never> & Sendable)?.none, order: .forward)
+        return try await songs(sortedBy: SortKey<MPMediaItem, Never>?.none, order: .forward)
     }
 
     /// Fetches songs matching a predicate with default comparison type.
@@ -370,7 +416,7 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// let allAlbums = try await library.albums()
     /// ```
     public func albums() async throws -> [MPMediaItemCollection] {
-        return try await albums(sortedBy: (KeyPath<MPMediaItemCollection, Never> & Sendable)?.none, order: .reverse)
+        return try await albums(sortedBy: SortKey<MPMediaItemCollection, Never>?.none, order: .reverse)
     }
 
     // MARK: - Deprecated
