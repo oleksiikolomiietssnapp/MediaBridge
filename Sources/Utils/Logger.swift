@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-let log: Logger = Logger(
+internal let log: Logger = Logger(
     subsystem: "media-bridge",
     category: "default"
 )

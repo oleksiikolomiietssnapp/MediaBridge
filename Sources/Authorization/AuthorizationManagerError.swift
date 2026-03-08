@@ -48,6 +48,8 @@ public enum AuthorizationManagerError: Error, LocalizedError {
 
 extension AuthorizationManagerError: Equatable {
     public static func == (lhs: AuthorizationManagerError, rhs: AuthorizationManagerError) -> Bool {
-        lhs.errorDescription == rhs.errorDescription
+        switch (lhs, rhs) {
+        case (.unauthorized(let l), .unauthorized(let r)): l == r
+        }
     }
 }
