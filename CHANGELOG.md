@@ -23,6 +23,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AuthorizationManager` is now `final`
 - `log` global in `Logger.swift` is now explicitly `internal`
 
+## [0.6.3] - 2026-02-08
+
+### Changed
+- Improved `SortKey` type definition
+- Ensured `albums` methods are consistently defined on `MusicLibraryProtocol`
+
+## [0.6.2] - 2026-02-08
+
+### Added
+- `albums` methods added to `MusicLibraryProtocol`
+
+## [0.6.1] - 2026-02-08
+
+### Added
+- `albums(sortedBy:order:)` added to `MusicLibraryProtocol`
+
+## [0.6.0] - 2026-02-07
+
+### Added
+- `albums()` - fetch all albums without sorting
+- `albums(sortedBy:order:)` - fetch albums with optional sorting
+- `albums(matching:_:groupingType:)` - fetch albums matching a predicate
+- `mediaItemCollections(ofType:matching:_:groupingType:)` to `MusicLibraryProtocol`
+
+### Changed
+- Separated authorization types into individual files
+- Improved error type naming
+- Improved DocC documentation comments
+
+## [0.5.1] - 2026-01-14
+
+### Fixed
+- Fixed typo in `Package.swift` to allow Swift Package Index to build against Swift 6 and lower versions
+
 ## [0.5.0] - 2025-12-06
 
 ### Added
