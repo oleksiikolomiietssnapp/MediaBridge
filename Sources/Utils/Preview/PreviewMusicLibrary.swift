@@ -2,7 +2,18 @@ import Foundation
 import MediaPlayer
 
 #if DEBUG
-    public class PreviewMusicLibrary: MusicLibraryProtocol {
+    /// A debug-only `MusicLibraryProtocol` implementation for use in SwiftUI previews.
+    ///
+    /// Pre-populate it with mock data and inject it via the environment:
+    /// ```swift
+    /// #Preview {
+    ///     ContentView()
+    ///         .environment(\.library, .accessAuthorized)
+    /// }
+    /// ```
+    /// Use the static factory methods on `MusicLibraryProtocol` (e.g. `.accessAuthorized`,
+    /// `.accessDenied`) for common configurations, or construct a custom instance directly.
+    public final class PreviewMusicLibrary: MusicLibraryProtocol {
         private let status: MPMediaLibraryAuthorizationStatus
         private let statusAfterRequest: MPMediaLibraryAuthorizationStatus
         private let fetchedAllMedia: [MPMediaItem]
