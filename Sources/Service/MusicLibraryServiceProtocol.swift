@@ -133,6 +133,32 @@ public protocol MusicLibraryServiceProtocol: Sendable {
         comparisonType: MPMediaPredicateComparison,
         groupingType: MPMediaGrouping
     ) async throws -> [MPMediaItemCollection]
+
+    // MARK: - Playlists
+
+    /// Fetches all playlists from the music library.
+    ///
+    /// Retrieves all playlists and returns them as their concrete `MPMediaPlaylist` type,
+    /// giving access to playlist-specific properties such as `name`, `playlistAttributes`, and `seedItems`.
+    ///
+    /// - Returns: Array of all playlists in the library
+    /// - Throws: An error of specific type if the query fails
+    func fetchAllPlaylists() async throws -> [MPMediaPlaylist]
+
+    /// Fetches playlists matching a predicate.
+    ///
+    /// Queries the music library for playlists matching the provided predicate.
+    /// Use `.playlistName(_:)` or `.playlistID(_:)` as the predicate.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter playlists (e.g., `.playlistName("Favorites")`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    /// - Returns: Array of playlists matching the criteria
+    /// - Throws: An error of specific type if the query fails
+    func fetchPlaylists(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaPlaylist]
 }
 
 

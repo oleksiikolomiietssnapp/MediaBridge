@@ -41,6 +41,9 @@ let albums = try await library.albums()
 
 // Fetch artists
 let artists = try await library.artists()
+
+// Fetch playlists
+let playlists = try await library.playlists()
 ```
 
 For SwiftUI, inject via environment:

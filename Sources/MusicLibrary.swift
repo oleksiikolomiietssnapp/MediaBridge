@@ -315,6 +315,56 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await mediaItemCollections(ofType: .music, matching: predicate, comparisonType, groupingType: groupingType)
     }
 
+    public func playlists<T: Comparable>(
+        sortedBy sortingKey: SortKey<MPMediaPlaylist, T>?,
+        order: SortOrder
+    ) async throws -> [MPMediaPlaylist] {
+        try await checkIfAuthorized()
+        let playlists = try await service.fetchAllPlaylists()
+
+        if let sortingKey {
+            return playlists.sorted(using: KeyPathComparator(sortingKey, order: order))
+        }
+
+        return playlists
+    }
+
+    /// Fetches playlists matching a predicate.
+    ///
+    /// Convenience method for fetching playlists by name, ID, or other filterable property.
+    /// Returns the concrete `MPMediaPlaylist` type for full access to playlist-specific properties
+    /// such as `name`, `playlistAttributes`, `descriptionText`, and `seedItems`.
+    ///
+    /// Artwork is available via `playlist.representativeItem?.artwork` — the cover art of
+    /// the first track in the playlist, which is how the system Music app surfaces it.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter playlists (e.g., `.playlistName("Favorites")`, `.playlistID(123)`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    /// - Returns: Array of playlists matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized,
+    ///   or ``MusicLibraryServiceError/noCollectionFound(_:)`` if no matching playlists are found
+    ///
+    /// ## Example
+    /// ```swift
+    /// let library = MusicLibrary()
+    /// let chillPlaylists = try await library.playlists(
+    ///     matching: .playlistName("Chill"),
+    ///     .contains
+    /// )
+    /// for playlist in chillPlaylists {
+    ///     let artwork = playlist.representativeItem?.artwork
+    ///     let isSmartPlaylist = playlist.playlistAttributes.contains(.smart)
+    /// }
+    /// ```
+    public func playlists(
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaPlaylist] {
+        try await checkIfAuthorized()
+        return try await service.fetchPlaylists(with: predicate, comparisonType: comparisonType)
+    }
+
     // MARK: - Private methods
 
     private func checkIfAuthorized() async throws {

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-08
+
+### Added
+- `playlists()` - fetch all playlists without sorting
+- `playlists(sortedBy:order:)` - fetch playlists with optional sorting; returns `[MPMediaPlaylist]` for full access to `name`, `playlistAttributes`, `descriptionText`, `seedItems`, and `cloudGlobalID`
+- `playlists(matching:_:)` - fetch playlists matching a predicate (no `groupingType` parameter — playlists are always `.playlist` grouped)
+- `.playlistName(String)` and `.playlistID(UInt64)` predicate cases added to `MediaItemPredicateInfo`
+- `fetchAllPlaylists()` and `fetchPlaylists(with:comparisonType:)` added to `MusicLibraryServiceProtocol`
+
 ## [0.8.0] - 2026-03-08
 
 ### Added

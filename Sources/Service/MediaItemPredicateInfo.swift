@@ -56,6 +56,12 @@ public enum MediaItemPredicateInfo: Sendable {
     /// Filter by composer's persistent ID.
     case composerID(UInt64)
 
+    /// Filter by playlist name.
+    case playlistName(String)
+
+    /// Filter by playlist's persistent ID.
+    case playlistID(UInt64)
+
     /// Converts this predicate info to an `MPMediaPropertyPredicate`.
     ///
     /// This method is typically called internally by library methods, but can be used
@@ -104,6 +110,9 @@ public enum MediaItemPredicateInfo: Sendable {
 
         case .composer: MPMediaItemPropertyComposer
         case .composerID: MPMediaItemPropertyComposerPersistentID
+
+        case .playlistName: MPMediaPlaylistPropertyName
+        case .playlistID: MPMediaPlaylistPropertyPersistentID
         }
     }
 
@@ -127,6 +136,9 @@ public enum MediaItemPredicateInfo: Sendable {
 
         case .composer(let composer): composer
         case .composerID(let composerId): composerId
+
+        case .playlistName(let name): name
+        case .playlistID(let id): id
         }
     }
 }

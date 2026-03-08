@@ -91,6 +91,34 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
         return collections
     }
 
+    /// Fetches all playlists from the music library.
+    ///
+    /// Implementation of ``MusicLibraryServiceProtocol/fetchAllPlaylists()`` that retrieves all playlists
+    /// using `MPMediaQuery` with `.playlist` grouping and casts the results to `[MPMediaPlaylist]`.
+    public func fetchAllPlaylists() async throws -> [MPMediaPlaylist] {
+        guard let collections = playlistQuery().collections else {
+            throw E.noCollectionsFound
+        }
+        return collections.compactMap { $0 as? MPMediaPlaylist }
+    }
+
+    /// Fetches playlists matching a predicate.
+    ///
+    /// Implementation of ``MusicLibraryServiceProtocol/fetchPlaylists(with:comparisonType:)`` that queries
+    /// playlists by the provided predicate and casts the results to `[MPMediaPlaylist]`.
+    public func fetchPlaylists(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison = .equalTo
+    ) async throws -> [MPMediaPlaylist] {
+        let filter = predicate.predicate(using: comparisonType)
+        var query = Q(filterPredicates: [filter])
+        query.groupingType = .playlist
+        guard let collections = query.collections else {
+            throw E.noCollectionFound(predicate)
+        }
+        return collections.compactMap { $0 as? MPMediaPlaylist }
+    }
+
     // MARK: - Private Helpers
 
     private func query(
@@ -114,6 +142,12 @@ public final class MusicLibraryService<T: MediaQueryProtocol>: MusicLibraryServi
         let additionalFilter = predicate.predicate(using: comparisonType)
 
         return prepareQuery(with: [typeFilter, additionalFilter], groupingType: groupingType)
+    }
+
+    private func playlistQuery() -> Q {
+        var query = Q(filterPredicates: nil)
+        query.groupingType = .playlist
+        return query
     }
 
     private func prepareQuery(

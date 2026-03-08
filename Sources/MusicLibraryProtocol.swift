@@ -325,6 +325,61 @@ public protocol MusicLibraryProtocol {
         order: SortOrder
     ) async throws -> [MPMediaItemCollection]
 
+    // MARK: - Playlists
+
+    /// Fetches playlists matching a predicate.
+    ///
+    /// Returns the concrete `MPMediaPlaylist` type, giving access to playlist-specific properties
+    /// such as `name`, `playlistAttributes` (smart/genius/onTheGo), `descriptionText`, and `seedItems`.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter playlists (e.g., `.playlistName("Favorites")`, `.playlistID(123)`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    /// - Returns: Array of playlists matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let results = try await library.playlists(matching: .playlistName("Chill"), .contains)
+    /// ```
+    func playlists(
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison
+    ) async throws -> [MPMediaPlaylist]
+
+    /// Fetches all playlists with optional sorting.
+    ///
+    /// Retrieves all playlists from the music library and optionally sorts them by a specified key path.
+    /// Returns the concrete `MPMediaPlaylist` type for full access to playlist-specific properties.
+    ///
+    /// - Parameters:
+    ///   - sortingKey: Optional key path to sort by (e.g., `\MPMediaPlaylist.name`).\
+    ///     If `nil`, results are not sorted.
+    ///   - order: The sort order (`.forward` for ascending, `.reverse` for descending)
+    /// - Returns: Array of playlists, sorted if a key is provided
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Examples
+    /// Fetch playlists sorted by name:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let playlists = try await library.playlists(
+    ///     sortedBy: \MPMediaPlaylist.name,
+    ///     order: .forward
+    /// )
+    /// ```
+    ///
+    /// Fetch unsorted playlists:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let playlists = try await library.playlists()
+    /// ```
+    func playlists<T: Comparable>(
+        sortedBy sortingKey: SortKey<MPMediaPlaylist, T>?,
+        order: SortOrder
+    ) async throws -> [MPMediaPlaylist]
+
 }
 
 extension MusicLibraryProtocol {
@@ -407,6 +462,23 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// ```
     public func artists() async throws -> [MPMediaItemCollection] {
         return try await artists(sortedBy: SortKey<MPMediaItemCollection, Never>?.none, order: .reverse)
+    }
+
+    /// Fetches all playlists without sorting.
+    ///
+    /// Convenience method that fetches all playlists with default behavior (forward order).
+    /// Equivalent to calling `playlists(sortedBy: nil, order: .forward)`.
+    ///
+    /// - Returns: Array of all playlists in the library, unsorted
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let allPlaylists = try await library.playlists()
+    /// ```
+    public func playlists() async throws -> [MPMediaPlaylist] {
+        return try await playlists(sortedBy: SortKey<MPMediaPlaylist, Never>?.none, order: .forward)
     }
 
     // MARK: - Deprecated

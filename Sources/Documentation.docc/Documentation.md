@@ -21,6 +21,7 @@ let library = MusicLibrary()
 let songs = try await library.songs()
 let albums = try await library.albums()
 let artists = try await library.artists()
+let playlists = try await library.playlists()
 ```
 
 Fetch with sorting:
@@ -41,6 +42,9 @@ let artistSongs = try await library.songs(matching: .artist("Taylor Swift"), com
 
 // Albums matching a genre
 let rockAlbums = try await library.albums(matching: .genre("Rock"), .equalTo, groupingType: .album)
+
+// Playlists matching a name
+let chillPlaylists = try await library.playlists(matching: .playlistName("Chill"), .contains)
 ```
 
 Or inject it into SwiftUI views via environment values:

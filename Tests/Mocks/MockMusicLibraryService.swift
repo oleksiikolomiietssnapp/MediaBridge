@@ -6,7 +6,7 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
     typealias Q = MPMediaQuery
 
     enum MockError: Error {
-        case noSong, noSongs, noAlbum, noAlbums, noArtist, noArtists
+        case noSong, noSongs, noAlbum, noAlbums, noArtist, noArtists, noPlaylist, noPlaylists
     }
 
     init(
@@ -18,7 +18,10 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         fetchAlbumsError: MockError? = nil,
         artists: [MPMediaItemCollection] = [.mock],
         artistsError: MockError? = nil,
-        fetchArtistsError: MockError? = nil
+        fetchArtistsError: MockError? = nil,
+        playlists: [MPMediaPlaylist] = [],
+        playlistsError: MockError? = nil,
+        fetchPlaylistsError: MockError? = nil
     ) {
         self.fetchSongError = fetchSongError
         self.fetchSongsError = fetchSongsError
@@ -29,6 +32,9 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         self.artists = artists
         self.artistsError = artistsError
         self.fetchArtistsError = fetchArtistsError
+        self.playlists = playlists
+        self.playlistsError = playlistsError
+        self.fetchPlaylistsError = fetchPlaylistsError
     }
 
     @MainActor var fetchSongsError: MockError?
@@ -78,11 +84,27 @@ final class MockMusicLibraryService: MusicLibraryServiceProtocol {
         guard let fetchAlbumsError = await fetchAlbumsError else { return [] }
         throw fetchAlbumsError
     }
+
+    @MainActor var playlists: [MPMediaPlaylist]
+    @MainActor var fetchPlaylistsError: MockError?
+    func fetchAllPlaylists() async throws(MockError) -> [MPMediaPlaylist] {
+        guard let fetchPlaylistsError = await fetchPlaylistsError else { return await playlists }
+        throw fetchPlaylistsError
+    }
+
+    @MainActor var playlistsError: MockError?
+    func fetchPlaylists(
+        with predicate: MediaItemPredicateInfo,
+        comparisonType: MPMediaPredicateComparison
+    ) async throws(MockError) -> [MPMediaPlaylist] {
+        guard let playlistsError = await playlistsError else { return await playlists }
+        throw playlistsError
+    }
 }
 
 extension MusicLibraryServiceProtocol where Self == MockMusicLibraryService {
     static var mock: MockMusicLibraryService {
-        MockMusicLibraryService(albums: [], artists: [])
+        MockMusicLibraryService(albums: [], artists: [], playlists: [])
     }
 }
 

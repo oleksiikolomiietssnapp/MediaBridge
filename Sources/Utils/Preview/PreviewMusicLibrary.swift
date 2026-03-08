@@ -22,6 +22,7 @@ import MediaPlayer
         private let filteredSongs: [MPMediaItem]
         private let filteredAlbums: [MPMediaItemCollection]
         private let filteredArtists: [MPMediaItemCollection]
+        private let filteredPlaylists: [MPMediaPlaylist]
 
         init(
             status: MPMediaLibraryAuthorizationStatus,
@@ -31,7 +32,8 @@ import MediaPlayer
             fetchedSongs: [MPMediaItem],
             filteredSongs: [MPMediaItem],
             filteredAlbums: [MPMediaItemCollection],
-            filteredArtists: [MPMediaItemCollection] = []
+            filteredArtists: [MPMediaItemCollection] = [],
+            filteredPlaylists: [MPMediaPlaylist] = []
         ) {
             self.status = status
             self.statusAfterRequest = statusAfterRequest
@@ -41,6 +43,7 @@ import MediaPlayer
             self.filteredSongs = filteredSongs
             self.filteredAlbums = filteredAlbums
             self.filteredArtists = filteredArtists
+            self.filteredPlaylists = filteredPlaylists
         }
 
         public var authorizationStatus: MPMediaLibraryAuthorizationStatus { status }
@@ -87,5 +90,14 @@ import MediaPlayer
         public func artists<T>(sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?, order: SortOrder) async throws
             -> [MPMediaItemCollection]
         where T: Comparable { filteredArtists }
+
+        public func playlists(
+            matching predicate: MediaItemPredicateInfo,
+            _ comparisonType: MPMediaPredicateComparison
+        ) async throws -> [MPMediaPlaylist] { filteredPlaylists }
+
+        public func playlists<T>(sortedBy sortingKey: SortKey<MPMediaPlaylist, T>?, order: SortOrder) async throws
+            -> [MPMediaPlaylist]
+        where T: Comparable { filteredPlaylists }
     }
 #endif
