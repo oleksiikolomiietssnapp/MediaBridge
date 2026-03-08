@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-03-08
+
+### Fixed
+- Lowered `swift-tools-version` from `6.0` to `5.9` so the package manifest is readable by Swift 5.9+ toolchains
+
 ## [0.9.0] - 2026-03-08
 
 ### Added
