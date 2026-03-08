@@ -23,6 +23,6 @@ let package = Package(
             name: "MediaBridgeTests",
             dependencies: ["MediaBridge"],
             path: "Tests"
-        ),
+        )
     ]
 )
