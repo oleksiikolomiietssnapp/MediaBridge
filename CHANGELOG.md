@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-03-08
+
+### Breaking Changes
+- `albumArtistID` predicate case now takes `UInt64` instead of `String`, consistent with all other ID-based cases and with the underlying `MPMediaItemPropertyAlbumArtistPersistentID` type
+
+### Removed
+- Deprecated methods `fetchSongs(sortedBy:order:)`, `fetchSong(with:comparisonType:)`, and `fetch(_:with:_:groupingType:)` are no longer protocol requirements — conformers no longer need to implement them. Default implementations forwarding to the current API are provided via a protocol extension.
+- Removed unused empty `MediaItem` internal protocol
+
+### Fixed
+- `MediaItemPredicateInfo.description` had a stray `)` producing malformed error messages and log entries
+- `MusicLibraryServiceError.==` and `AuthorizationManagerError.==` now compare structurally instead of via `errorDescription` strings
+- Removed infinite recursion in `songs(matching:comparisonType:)` protocol extension
+- `AuthorizationManager` is now `final`
+- `log` global in `Logger.swift` is now explicitly `internal`
+
 ## [0.5.0] - 2025-12-06
 
 ### Added
