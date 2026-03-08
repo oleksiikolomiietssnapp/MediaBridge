@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 
 import PackageDescription
 
@@ -6,7 +6,7 @@ let package = Package(
     name: "MediaBridge",
     platforms: [
         .iOS(.v15),
-        .visionOS(.v1),
+        .visionOS(.v1)
     ],
     products: [
         .library(
