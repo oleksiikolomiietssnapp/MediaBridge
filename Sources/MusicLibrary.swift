@@ -269,6 +269,52 @@ public final class MusicLibrary: MusicLibraryProtocol {
         return try await mediaItemCollections(ofType: .music, matching: predicate, comparisonType, groupingType: groupingType)
     }
 
+    public func artists<T: Comparable>(
+        sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?,
+        order: SortOrder
+    ) async throws -> [MPMediaItemCollection] {
+        try await checkIfAuthorized()
+        let artists = try await service.fetchAllCollections(.music, groupingType: .artist)
+
+        if let sortingKey {
+            let sorted = artists.sorted(using: KeyPathComparator(sortingKey, order: order))
+            return sorted
+        }
+
+        return artists
+    }
+
+    /// Fetches artist collections matching a predicate.
+    ///
+    /// Convenience method for fetching music artists grouped by the specified grouping type.
+    /// This is a specialized version of ``mediaItemCollections(ofType:matching:_:groupingType:)``
+    /// that's pre-configured for music artists.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter artists (e.g., `.artist("The Beatles")`, `.genre("Rock")`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    ///   - groupingType: How to group the returned collections (typically `.artist` or `.albumArtist`)
+    /// - Returns: Array of artist collections matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized,
+    ///   or ``MusicLibraryServiceError/noCollectionFound(_:)`` if no matching artists are found
+    ///
+    /// ## Example
+    /// ```swift
+    /// let library = MusicLibrary()
+    /// let artists = try await library.artists(
+    ///     matching: .artist("The Beatles"),
+    ///     .equalTo,
+    ///     groupingType: .artist
+    /// )
+    /// ```
+    public func artists(
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection] {
+        return try await mediaItemCollections(ofType: .music, matching: predicate, comparisonType, groupingType: groupingType)
+    }
+
     // MARK: - Private methods
 
     private func checkIfAuthorized() async throws {

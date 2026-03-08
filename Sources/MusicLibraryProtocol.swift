@@ -262,6 +262,69 @@ public protocol MusicLibraryProtocol {
         order: SortOrder
     ) async throws -> [MPMediaItemCollection]
 
+    // MARK: - Artists
+
+    /// Fetches artist collections matching a predicate.
+    ///
+    /// Convenience method for fetching music artists grouped by the specified grouping type.
+    /// This is a specialized version of ``mediaItemCollections(ofType:matching:_:groupingType:)``
+    /// that's pre-configured for music artists.
+    ///
+    /// - Parameters:
+    ///   - predicate: The predicate to filter artists (e.g., `.artist("The Beatles")`, `.genre("Rock")`)
+    ///   - comparisonType: How to compare the predicate value (`.equalTo`, `.contains`, etc.)
+    ///   - groupingType: How to group the returned collections (typically `.artist`)
+    /// - Returns: Array of artist collections matching the criteria
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized,
+    ///   or ``MusicLibraryServiceError/noCollectionFound(_:)`` if no matching artists are found
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let beatles = try await library.artists(
+    ///     matching: .artist("The Beatles"),
+    ///     .contains,
+    ///     groupingType: .artist
+    /// )
+    /// ```
+    func artists(
+        matching predicate: MediaItemPredicateInfo,
+        _ comparisonType: MPMediaPredicateComparison,
+        groupingType: MPMediaGrouping
+    ) async throws -> [MPMediaItemCollection]
+
+    /// Fetches all artists with optional sorting.
+    ///
+    /// Retrieves all artists from the music library and optionally sorts them by a specified key path.
+    /// If no sort key is provided, artists are returned unsorted.
+    ///
+    /// - Parameters:
+    ///   - sortingKey: Optional key path to sort by (e.g., `\MPMediaItemCollection.count`).
+    ///     If `nil`, results are not sorted.
+    ///   - order: The sort order (`.forward` for ascending, `.reverse` for descending)
+    /// - Returns: Array of artists, sorted if a key is provided
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Examples
+    /// Fetch artists sorted by track count:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let artists = try await library.artists(
+    ///     sortedBy: \MPMediaItemCollection.count,
+    ///     order: .reverse
+    /// )
+    /// ```
+    ///
+    /// Fetch unsorted artists:
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let artists = try await library.artists()
+    /// ```
+    func artists<T: Comparable>(
+        sortedBy sortingKey: SortKey<MPMediaItemCollection, T>?,
+        order: SortOrder
+    ) async throws -> [MPMediaItemCollection]
+
 }
 
 extension MusicLibraryProtocol {
@@ -327,6 +390,23 @@ extension MusicLibraryProtocol where Self == MusicLibrary {
     /// ```
     public func albums() async throws -> [MPMediaItemCollection] {
         return try await albums(sortedBy: SortKey<MPMediaItemCollection, Never>?.none, order: .reverse)
+    }
+
+    /// Fetches all artists without sorting.
+    ///
+    /// Convenience method that fetches all artists with default behavior (reverse order).
+    /// Equivalent to calling `artists(sortedBy: nil, order: .reverse)`.
+    ///
+    /// - Returns: Array of all artists in the library, in reverse order
+    /// - Throws: ``AuthorizationManagerError/unauthorized(_:)`` if music library access is not authorized
+    ///
+    /// ## Example
+    /// ```swift
+    /// @Environment(\.library) var library
+    /// let allArtists = try await library.artists()
+    /// ```
+    public func artists() async throws -> [MPMediaItemCollection] {
+        return try await artists(sortedBy: SortKey<MPMediaItemCollection, Never>?.none, order: .reverse)
     }
 
     // MARK: - Deprecated
