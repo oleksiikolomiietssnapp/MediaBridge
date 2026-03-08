@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-03-08
+
+### Added
+- `artists()` - fetch all artists without sorting
+- `artists(sortedBy:order:)` - fetch artists with optional sorting
+- `artists(matching:_:groupingType:)` - fetch artists matching a predicate
+
 ## [0.7.0] - 2026-03-08
 
 ### Breaking Changes

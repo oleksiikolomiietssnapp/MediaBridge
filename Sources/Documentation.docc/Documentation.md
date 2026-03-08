@@ -20,6 +20,7 @@ For most use cases, simply create a `MusicLibrary` instance and start fetching:
 let library = MusicLibrary()
 let songs = try await library.songs()
 let albums = try await library.albums()
+let artists = try await library.artists()
 ```
 
 Fetch with sorting:

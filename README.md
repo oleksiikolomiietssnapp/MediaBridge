@@ -19,7 +19,7 @@ Add MediaBridge to your project via Swift Package Manager:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/oleksiikolomiietssnapp/MediaBridge.git", from: "0.7.0")
+    .package(url: "https://github.com/oleksiikolomiietssnapp/MediaBridge.git", from: "0.8.0")
 ]
 ```
 
@@ -38,6 +38,9 @@ let songs = try await library.songs()
 
 // Fetch albums
 let albums = try await library.albums()
+
+// Fetch artists
+let artists = try await library.artists()
 ```
 
 For SwiftUI, inject via environment:
