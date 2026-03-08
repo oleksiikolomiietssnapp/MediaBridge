@@ -13,6 +13,16 @@ A Swift bridge for MPMediaLibrary integration.
 [![Tests](https://github.com/oleksiikolomiietssnapp/MediaBridge/actions/workflows/test.yml/badge.svg)](https://github.com/oleksiikolomiietssnapp/MediaBridge/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E)](LICENSE)
 
+## Installation
+
+Add MediaBridge to your project via Swift Package Manager:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/oleksiikolomiietssnapp/MediaBridge.git", from: "0.7.0")
+]
+```
+
 ## Quick Start
 
 ```swift
@@ -23,7 +33,11 @@ if library.authorizationStatus != .authorized {
     try await library.requestAuthorization()
 }
 
+// Fetch songs
 let songs = try await library.songs()
+
+// Fetch albums
+let albums = try await library.albums()
 ```
 
 For SwiftUI, inject via environment:
@@ -34,10 +48,25 @@ extension EnvironmentValues {
 }
 
 @Environment(\.library) var library
+
+// Songs sorted by skip count
 let songs = try await library.songs(sortedBy: \MPMediaItem.skipCount, order: .reverse)
+
+// Albums sorted by track count
+let albums = try await library.albums(sortedBy: \MPMediaItemCollection.count, order: .reverse)
+
+// Filter by genre
+let rockSongs = try await library.songs(matching: .genre("Rock"), comparisonType: .equalTo)
 ```
 
 Both the service layer and authorization manager use production implementations by default (`.live`), but you can provide custom implementations for testing or specialized behavior.
+
+## Migration
+
+### 0.7.0
+
+- `albumArtistID` predicate case now takes `UInt64` instead of `String`. Update any call sites using `.albumArtistID("...")` to pass a numeric ID instead.
+- `fetchSongs`, `fetchSong`, and `fetch` are no longer protocol requirements. They remain available as deprecated extension methods but conformers no longer need to implement them.
 
 ## Documentation
 

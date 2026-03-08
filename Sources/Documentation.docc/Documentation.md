@@ -6,7 +6,7 @@
     @PageColor(orange)
 }
 
-A Swift bridge for MPMediaLibrary integration. Provides easy, lightweight and flexible methods to fetch media library content from you phone.
+A Swift bridge for MPMediaLibrary integration. Provides easy, lightweight and flexible methods to fetch media library content from your phone.
 
 ## Overview
 
@@ -19,6 +19,27 @@ For most use cases, simply create a `MusicLibrary` instance and start fetching:
 ```swift
 let library = MusicLibrary()
 let songs = try await library.songs()
+let albums = try await library.albums()
+```
+
+Fetch with sorting:
+
+```swift
+// Songs sorted by skip count (most skipped first)
+let songs = try await library.songs(sortedBy: \MPMediaItem.skipCount, order: .reverse)
+
+// Albums sorted by track count
+let albums = try await library.albums(sortedBy: \MPMediaItemCollection.count, order: .reverse)
+```
+
+Filter using predicates:
+
+```swift
+// Songs by a specific artist
+let artistSongs = try await library.songs(matching: .artist("Taylor Swift"), comparisonType: .contains)
+
+// Albums matching a genre
+let rockAlbums = try await library.albums(matching: .genre("Rock"), .equalTo, groupingType: .album)
 ```
 
 Or inject it into SwiftUI views via environment values:
@@ -33,7 +54,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            // Use library to fetch songs
+            // Use library to fetch songs or albums
         }
         .task {
             // Optional: Request authorization if not yet determined
@@ -75,4 +96,3 @@ let library = MusicLibrary(auth: customAuth, service: customService)
 - ``AuthorizationManager``
 - ``MediaLibraryProtocol``
 - ``AuthorizationManagerError``
-
