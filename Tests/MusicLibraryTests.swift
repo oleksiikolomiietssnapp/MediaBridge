@@ -111,7 +111,7 @@ class MusicLibraryTests {
         #expect(library.authorizationStatus == .authorized)
 
         await #expect(throws: MockMusicLibraryService.MockError.noSong) {
-            let _ = try await library.songs(matching: .mock)
+            let _ = try await library.songs(matching: .mock, comparisonType: .equalTo)
         }
     }
 

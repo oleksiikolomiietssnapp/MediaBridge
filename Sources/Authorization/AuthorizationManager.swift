@@ -18,7 +18,7 @@ import MediaPlayer
 /// ```
 ///
 /// For custom implementations, conform to ``AuthorizationManagerProtocol`` and inject your implementation.
-public class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {
+public final class AuthorizationManager<T: MediaLibraryProtocol>: AuthorizationManagerProtocol {
     /// Requests authorization to access the music library.
     ///
     /// Checks if authorization is already granted. If so, returns immediately.

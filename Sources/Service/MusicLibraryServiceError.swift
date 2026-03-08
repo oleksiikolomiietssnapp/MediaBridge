@@ -141,6 +141,12 @@ public enum MusicLibraryServiceError: Error, LocalizedError, Equatable {
     // MARK: - Equatable Conformance
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.errorDescription == rhs.errorDescription
+        switch (lhs, rhs) {
+        case (.noItemsFound, .noItemsFound): true
+        case (.noCollectionsFound, .noCollectionsFound): true
+        case (.noItemFound(let l), .noItemFound(let r)): l.description == r.description
+        case (.noCollectionFound(let l), .noCollectionFound(let r)): l.description == r.description
+        default: false
+        }
     }
 }

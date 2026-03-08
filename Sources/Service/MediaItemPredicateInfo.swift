@@ -42,7 +42,7 @@ public enum MediaItemPredicateInfo: Sendable {
     case albumArtist(String)
 
     /// Filter by album artist's persistent ID.
-    case albumArtistID(String)
+    case albumArtistID(UInt64)
 
     /// Filter by genre name.
     case genre(String)
@@ -81,7 +81,7 @@ public enum MediaItemPredicateInfo: Sendable {
     }
 
     public var description: String {
-        "\(property)) with value `\(String(describing: value))`"
+        "\(property) with value `\(String(describing: value))`"
     }
 
     private var property: String {
